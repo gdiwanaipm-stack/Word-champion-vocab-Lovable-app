@@ -1,0 +1,4 @@
+project_id = "omjnnrlcjanfimaosqcy"
+
+[functions.generate-vocabulary]
+verify_jwt = false
