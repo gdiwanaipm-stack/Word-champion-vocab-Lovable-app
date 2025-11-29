@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
-import { Home, BookOpen, RotateCcw, Settings, Trophy } from 'lucide-react';
+import { Home, BookOpen, RotateCcw, Settings, Trophy, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import soccerBall from '@/assets/soccer-ball.png';
 
@@ -11,6 +11,7 @@ export function Navigation() {
     { to: '/practice', icon: BookOpen, label: 'Practice' },
     { to: '/review', icon: RotateCcw, label: 'Review' },
     { to: '/progress', icon: Trophy, label: 'Progress' },
+    { to: '/ai-vocabulary', icon: Sparkles, label: 'AI Words' },
     { to: '/settings', icon: Settings, label: 'Settings' },
   ];
 
