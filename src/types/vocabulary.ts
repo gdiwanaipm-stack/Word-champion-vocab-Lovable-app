@@ -38,4 +38,13 @@ export interface UserSettings {
   gradeLevel: GradeLevel;
   difficulty: Difficulty;
   darkMode: boolean;
+  autoProgressionEnabled: boolean;
+}
+
+export interface ProgressionStats {
+  currentAccuracy: number;
+  wordsAtCurrentDifficulty: number;
+  isReadyForProgression: boolean;
+  nextDifficulty: Difficulty | null;
+  progressionThreshold: number;
 }

@@ -1,4 +1,5 @@
 import { Navigation } from '@/components/Navigation';
+import { ProgressionCard } from '@/components/ProgressionCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -12,8 +13,9 @@ import silverTrophy from '@/assets/silver-trophy.png';
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { dailyProgress, getCurrentWeekProgress, getLearnedWords } = useVocabulary();
+  const { dailyProgress, getCurrentWeekProgress, getLearnedWords, getProgressionStats, settings } = useVocabulary();
   const weekProgress = getCurrentWeekProgress();
+  const progressionStats = getProgressionStats();
   const today = format(new Date(), 'yyyy-MM-dd');
   const todayProgress = dailyProgress.find(d => d.date === today);
   const learnedWords = getLearnedWords();
@@ -40,6 +42,13 @@ export default function Dashboard() {
       </div>
       
       <main className="container mx-auto px-4 py-8 space-y-8">
+        {/* Progression Tracker */}
+        {settings.autoProgressionEnabled && (
+          <ProgressionCard 
+            stats={progressionStats} 
+            currentDifficulty={settings.difficulty}
+          />
+        )}
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
