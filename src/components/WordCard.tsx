@@ -14,9 +14,21 @@ export function WordCard({ word, onComplete }: WordCardProps) {
   const [userAnswer, setUserAnswer] = useState('');
   const [showAnswer, setShowAnswer] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [error, setError] = useState('');
+
+  const MIN_ANSWER_LENGTH = 5;
 
   const handleSubmit = () => {
-    const correct = userAnswer.toLowerCase().trim().includes(word.meaning.toLowerCase().split(' ').slice(0, 3).join(' ').toLowerCase());
+    const trimmedAnswer = userAnswer.trim();
+    
+    // Validate answer length
+    if (trimmedAnswer.length < MIN_ANSWER_LENGTH) {
+      setError(`Please write at least ${MIN_ANSWER_LENGTH} characters`);
+      return;
+    }
+    
+    setError('');
+    const correct = trimmedAnswer.toLowerCase().includes(word.meaning.toLowerCase().split(' ').slice(0, 3).join(' ').toLowerCase());
     setIsCorrect(correct);
     setShowAnswer(true);
   };
@@ -24,6 +36,8 @@ export function WordCard({ word, onComplete }: WordCardProps) {
   const handleNext = () => {
     onComplete(isCorrect ?? false);
   };
+
+  const isValidAnswer = userAnswer.trim().length >= MIN_ANSWER_LENGTH;
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
@@ -36,18 +50,31 @@ export function WordCard({ word, onComplete }: WordCardProps) {
       <CardContent className="space-y-6">
         {!showAnswer ? (
           <div className="space-y-4">
-            <Input
-              placeholder="Type the meaning here..."
-              value={userAnswer}
-              onChange={(e) => setUserAnswer(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && userAnswer.trim() && handleSubmit()}
-              className="text-lg"
-              autoFocus
-            />
+            <div className="space-y-2">
+              <Input
+                placeholder="Type the meaning here..."
+                value={userAnswer}
+                onChange={(e) => {
+                  setUserAnswer(e.target.value);
+                  setError('');
+                }}
+                onKeyDown={(e) => e.key === 'Enter' && isValidAnswer && handleSubmit()}
+                className="text-lg"
+                autoFocus
+              />
+              {error && (
+                <p className="text-sm text-destructive">{error}</p>
+              )}
+              {!error && userAnswer.trim().length > 0 && !isValidAnswer && (
+                <p className="text-sm text-muted-foreground">
+                  Write at least {MIN_ANSWER_LENGTH} characters
+                </p>
+              )}
+            </div>
             <Button 
               onClick={handleSubmit} 
               className="w-full"
-              disabled={!userAnswer.trim()}
+              disabled={!isValidAnswer}
               size="lg"
             >
               Check Answer
