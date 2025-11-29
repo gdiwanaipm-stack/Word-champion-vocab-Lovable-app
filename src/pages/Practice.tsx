@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { WordCard } from '@/components/WordCard';
+import { ProgressionDialog } from '@/components/ProgressionDialog';
 import { useVocabulary } from '@/hooks/useVocabulary';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -11,11 +12,13 @@ import goldTrophy from '@/assets/gold-trophy.png';
 
 export default function Practice() {
   const navigate = useNavigate();
-  const { getTodaysWords, updateProgress } = useVocabulary();
+  const { getTodaysWords, updateProgress, checkAndProgressDifficulty } = useVocabulary();
   const [words] = useState(() => getTodaysWords());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [completed, setCompleted] = useState(false);
   const [score, setScore] = useState(0);
+  const [showProgressionDialog, setShowProgressionDialog] = useState(false);
+  const [newDifficulty, setNewDifficulty] = useState<string>('');
 
   const handleComplete = (isCorrect: boolean) => {
     updateProgress(words[currentIndex].id, isCorrect);
@@ -25,6 +28,12 @@ export default function Practice() {
       setCurrentIndex(prev => prev + 1);
     } else {
       setCompleted(true);
+      // Check for difficulty progression after completing practice
+      const progressedDifficulty = checkAndProgressDifficulty();
+      if (progressedDifficulty) {
+        setNewDifficulty(progressedDifficulty);
+        setShowProgressionDialog(true);
+      }
     }
   };
 
@@ -32,6 +41,11 @@ export default function Practice() {
     return (
       <div className="min-h-screen bg-background pb-20 md:pb-0">
         <Navigation />
+        <ProgressionDialog 
+          isOpen={showProgressionDialog}
+          onClose={() => setShowProgressionDialog(false)}
+          newDifficulty={newDifficulty}
+        />
         <main className="container mx-auto px-4 py-8">
           <Card className="max-w-2xl mx-auto text-center">
             <CardHeader>

@@ -7,7 +7,19 @@ const defaultSettings: UserSettings = {
   gradeLevel: 'elementary',
   difficulty: 'easy',
   darkMode: false,
+  autoProgressionEnabled: true,
 };
+
+const DIFFICULTY_PROGRESSION: { [key: string]: string } = {
+  'easy': 'medium',
+  'medium': 'hard',
+  'hard': 'very-hard',
+  'very-hard': 'very-hard', // Max difficulty
+};
+
+// Thresholds: need 80% accuracy on at least 15 words to progress
+const PROGRESSION_THRESHOLD = 0.80;
+const MIN_WORDS_FOR_PROGRESSION = 15;
 
 export function useVocabulary() {
   const [settings, setSettings] = useLocalStorage<UserSettings>('vocab-settings', defaultSettings);
@@ -110,6 +122,53 @@ export function useVocabulary() {
       .filter(Boolean);
   };
 
+  const getProgressionStats = () => {
+    // Get progress for current difficulty level
+    const currentDifficultyWords = userProgress.filter(p => {
+      const word = vocabularyWords.find(w => w.id === p.wordId);
+      return word?.difficulty === settings.difficulty && word?.gradeLevel === settings.gradeLevel;
+    });
+
+    const wordsAtCurrentDifficulty = currentDifficultyWords.length;
+    
+    // Calculate accuracy for current difficulty
+    const totalAttempts = currentDifficultyWords.reduce((sum, p) => sum + p.attempts, 0);
+    const totalCorrect = currentDifficultyWords.reduce((sum, p) => sum + p.correct, 0);
+    const currentAccuracy = totalAttempts > 0 ? totalCorrect / totalAttempts : 0;
+
+    // Check if ready for progression
+    const isReadyForProgression = 
+      wordsAtCurrentDifficulty >= MIN_WORDS_FOR_PROGRESSION && 
+      currentAccuracy >= PROGRESSION_THRESHOLD &&
+      settings.difficulty !== 'very-hard';
+
+    const nextDifficulty = DIFFICULTY_PROGRESSION[settings.difficulty] as any;
+
+    return {
+      currentAccuracy,
+      wordsAtCurrentDifficulty,
+      isReadyForProgression,
+      nextDifficulty: nextDifficulty !== settings.difficulty ? nextDifficulty : null,
+      progressionThreshold: PROGRESSION_THRESHOLD,
+    };
+  };
+
+  const checkAndProgressDifficulty = () => {
+    if (!settings.autoProgressionEnabled) return null;
+
+    const stats = getProgressionStats();
+    
+    if (stats.isReadyForProgression && stats.nextDifficulty) {
+      setSettings(prev => ({
+        ...prev,
+        difficulty: stats.nextDifficulty as any,
+      }));
+      return stats.nextDifficulty;
+    }
+    
+    return null;
+  };
+
   return {
     settings,
     setSettings,
@@ -120,5 +179,7 @@ export function useVocabulary() {
     updateProgress,
     getCurrentWeekProgress,
     getLearnedWords,
+    getProgressionStats,
+    checkAndProgressDifficulty,
   };
 }
