@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { Trophy, PartyPopper } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import soccerPlayer from '@/assets/soccer-player.png';
+import goldTrophy from '@/assets/gold-trophy.png';
 
 export default function Practice() {
   const navigate = useNavigate();
@@ -35,9 +37,9 @@ export default function Practice() {
             <CardHeader>
               <div className="flex justify-center mb-4">
                 {score === words.length ? (
-                  <Trophy className="w-20 h-20 text-yellow-500" />
+                  <img src={goldTrophy} alt="Gold Trophy" className="w-32 h-32 object-contain animate-bounce" />
                 ) : (
-                  <PartyPopper className="w-20 h-20 text-primary" />
+                  <img src={soccerPlayer} alt="Soccer Player" className="w-32 h-32 object-contain" />
                 )}
               </div>
               <CardTitle className="text-3xl">Practice Complete!</CardTitle>

@@ -4,6 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Trophy } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { format, subDays, startOfWeek, endOfWeek } from 'date-fns';
+import goldTrophy from '@/assets/gold-trophy.png';
+import silverTrophy from '@/assets/silver-trophy.png';
 
 export default function Progress() {
   const { dailyProgress, weeklyProgress, getCurrentWeekProgress } = useVocabulary();
@@ -36,17 +38,24 @@ export default function Progress() {
           {/* Current Week Status */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className={`w-6 h-6 ${
-                  currentWeek.reward === 'gold' ? 'text-yellow-500' : 
-                  currentWeek.reward === 'silver' ? 'text-gray-400' : 
-                  'text-muted-foreground'
-                }`} />
-                This Week's Progress
-              </CardTitle>
-              <CardDescription>
-                {format(startOfWeek(new Date()), 'MMM d')} - {format(endOfWeek(new Date()), 'MMM d, yyyy')}
-              </CardDescription>
+              <div className="flex items-center gap-3">
+                {currentWeek.reward !== 'none' && (
+                  <img 
+                    src={currentWeek.reward === 'gold' ? goldTrophy : silverTrophy}
+                    alt={`${currentWeek.reward} trophy`}
+                    className="w-12 h-12 object-contain"
+                  />
+                )}
+                {currentWeek.reward === 'none' && (
+                  <Trophy className="w-8 h-8 text-muted-foreground" />
+                )}
+                <div className="flex-1">
+                  <CardTitle>This Week's Progress</CardTitle>
+                  <CardDescription>
+                    {format(startOfWeek(new Date()), 'MMM d')} - {format(endOfWeek(new Date()), 'MMM d, yyyy')}
+                  </CardDescription>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-3 gap-4 text-center">
@@ -123,14 +132,14 @@ export default function Progress() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="flex items-center gap-3 p-3 bg-accent rounded-lg">
-                <Trophy className="w-8 h-8 text-gray-400" />
+                <img src={silverTrophy} alt="Silver Trophy" className="w-12 h-12 object-contain" />
                 <div>
                   <div className="font-semibold">Silver Cup</div>
                   <div className="text-sm text-muted-foreground">Practice 5 out of 7 days in a week</div>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 bg-accent rounded-lg">
-                <Trophy className="w-8 h-8 text-yellow-500" />
+                <img src={goldTrophy} alt="Gold Trophy" className="w-12 h-12 object-contain" />
                 <div>
                   <div className="font-semibold">Gold Cup</div>
                   <div className="text-sm text-muted-foreground">Practice all 7 days in a week</div>
