@@ -5,6 +5,10 @@ import { useNavigate } from 'react-router-dom';
 import { useVocabulary } from '@/hooks/useVocabulary';
 import { Trophy, Target, Book, Zap } from 'lucide-react';
 import { format } from 'date-fns';
+import soccerBall from '@/assets/soccer-ball.png';
+import soccerField from '@/assets/soccer-field.png';
+import goldTrophy from '@/assets/gold-trophy.png';
+import silverTrophy from '@/assets/silver-trophy.png';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -18,12 +22,24 @@ export default function Dashboard() {
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <Navigation />
       
-      <main className="container mx-auto px-4 py-8 space-y-8">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-4xl font-bold text-foreground">VocabChamp ⚽</h1>
-          <p className="text-muted-foreground">Score goals with words!</p>
+      {/* Hero Section with Soccer Field Background */}
+      <div className="relative overflow-hidden">
+        <div 
+          className="absolute inset-0 opacity-20 dark:opacity-10"
+          style={{
+            backgroundImage: `url(${soccerField})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+          }}
+        />
+        <div className="relative container mx-auto px-4 py-12 text-center space-y-4">
+          <img src={soccerBall} alt="Soccer Ball" className="w-20 h-20 mx-auto animate-bounce" />
+          <h1 className="text-5xl font-bold text-foreground">VocabChamp</h1>
+          <p className="text-xl text-muted-foreground">Score goals with words!</p>
         </div>
+      </div>
+      
+      <main className="container mx-auto px-4 py-8 space-y-8">
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -84,15 +100,23 @@ export default function Dashboard() {
         {weekProgress.reward !== 'none' && (
           <Card className="border-primary bg-primary/5">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Trophy className={`w-6 h-6 ${weekProgress.reward === 'gold' ? 'text-yellow-500' : 'text-gray-400'}`} />
-                Week {weekProgress.reward === 'gold' ? 'Gold' : 'Silver'} Cup!
-              </CardTitle>
-              <CardDescription>
-                {weekProgress.reward === 'gold' 
-                  ? 'Amazing! You practiced all 7 days this week!' 
-                  : 'Great job! You practiced 5+ days this week!'}
-              </CardDescription>
+              <div className="flex items-center gap-4">
+                <img 
+                  src={weekProgress.reward === 'gold' ? goldTrophy : silverTrophy} 
+                  alt={`${weekProgress.reward} trophy`}
+                  className="w-16 h-16 object-contain"
+                />
+                <div className="flex-1">
+                  <CardTitle className="text-2xl">
+                    {weekProgress.reward === 'gold' ? 'Gold' : 'Silver'} Cup Champion! 🎉
+                  </CardTitle>
+                  <CardDescription className="text-base mt-1">
+                    {weekProgress.reward === 'gold' 
+                      ? 'Amazing! You practiced all 7 days this week!' 
+                      : 'Great job! You practiced 5+ days this week!'}
+                  </CardDescription>
+                </div>
+              </div>
             </CardHeader>
           </Card>
         )}

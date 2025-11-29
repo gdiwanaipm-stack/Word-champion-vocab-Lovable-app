@@ -1,6 +1,7 @@
 import { Link, useLocation } from 'react-router-dom';
 import { Home, BookOpen, RotateCcw, Settings, Trophy } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import soccerBall from '@/assets/soccer-ball.png';
 
 export function Navigation() {
   const location = useLocation();
@@ -16,7 +17,8 @@ export function Navigation() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50 md:relative md:border-t-0 md:border-b">
       <div className="container mx-auto px-4">
-        <div className="flex justify-around md:justify-start md:gap-6 py-3">
+        <div className="flex justify-around md:justify-start md:gap-6 py-3 items-center">
+          <img src={soccerBall} alt="VocabChamp" className="w-8 h-8 hidden md:block mr-2" />
           {links.map(({ to, icon: Icon, label }) => (
             <Link
               key={to}
