@@ -21,6 +21,11 @@ export function WordCard({ word, onComplete }: WordCardProps) {
     setShowAnswer(true);
   };
 
+  const handleSkip = () => {
+    setIsCorrect(false);
+    setShowAnswer(true);
+  };
+
   const handleNext = () => {
     onComplete(isCorrect ?? false);
   };
@@ -40,18 +45,28 @@ export function WordCard({ word, onComplete }: WordCardProps) {
               placeholder="Type the meaning here..."
               value={userAnswer}
               onChange={(e) => setUserAnswer(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
+              onKeyDown={(e) => e.key === 'Enter' && userAnswer.trim() && handleSubmit()}
               className="text-lg"
               autoFocus
             />
-            <Button 
-              onClick={handleSubmit} 
-              className="w-full"
-              disabled={!userAnswer.trim()}
-              size="lg"
-            >
-              Check Answer
-            </Button>
+            <div className="flex gap-3">
+              <Button 
+                onClick={handleSubmit} 
+                className="flex-1"
+                disabled={!userAnswer.trim()}
+                size="lg"
+              >
+                Check Answer
+              </Button>
+              <Button 
+                onClick={handleSkip} 
+                variant="outline"
+                className="flex-1"
+                size="lg"
+              >
+                Show Answer
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="space-y-6">
