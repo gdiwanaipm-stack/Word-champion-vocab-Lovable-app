@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,6 +19,14 @@ export function WordCard({ word, onComplete, attemptNumber, totalAttempts }: Wor
   const [error, setError] = useState('');
 
   const MIN_ANSWER_LENGTH = 5;
+
+  // Reset form when word or attempt changes
+  useEffect(() => {
+    setUserAnswer('');
+    setShowAnswer(false);
+    setIsCorrect(null);
+    setError('');
+  }, [word.id, attemptNumber]);
 
   const handleSubmit = () => {
     const trimmedAnswer = userAnswer.trim();
