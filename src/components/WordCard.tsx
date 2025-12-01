@@ -41,13 +41,13 @@ export function WordCard({ word, onComplete, attemptNumber, totalAttempts, onMar
     
     setError('');
     
-    // More lenient checking: extract key words from the meaning
+    // Very lenient checking: extract key words from the meaning
     const meaningWords = word.meaning.toLowerCase()
       .split(/\W+/)
-      .filter(w => w.length > 3); // Filter out small words like "a", "the", "is", etc.
+      .filter(w => w.length > 2); // Include more words (>2 chars instead of >3)
     
     const answerLower = trimmedAnswer.toLowerCase();
-    const answerWords = answerLower.split(/\W+/).filter(w => w.length > 3);
+    const answerWords = answerLower.split(/\W+/).filter(w => w.length > 2);
     
     // Check if key words from meaning appear in the answer (exact match)
     const exactMatches = meaningWords.filter(word => answerLower.includes(word));
@@ -63,8 +63,8 @@ export function WordCard({ word, onComplete, attemptNumber, totalAttempts, onMar
     const totalMatches = new Set([...exactMatches, ...partialMatches]).size;
     const matchPercentage = totalMatches / Math.max(meaningWords.length, 1);
     
-    // Consider it correct if at least 30% of key words match (relaxed threshold)
-    const correct = matchPercentage >= 0.3;
+    // Consider it correct if at least 15% of key words match (very relaxed threshold for subjective meanings)
+    const correct = matchPercentage >= 0.15;
     
     setIsCorrect(correct);
     setShowAnswer(true);
