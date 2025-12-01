@@ -38,7 +38,21 @@ export function WordCard({ word, onComplete, attemptNumber, totalAttempts }: Wor
     }
     
     setError('');
-    const correct = trimmedAnswer.toLowerCase().includes(word.meaning.toLowerCase().split(' ').slice(0, 3).join(' ').toLowerCase());
+    
+    // More lenient checking: extract key words from the meaning
+    const meaningWords = word.meaning.toLowerCase()
+      .split(/\W+/)
+      .filter(w => w.length > 3); // Filter out small words like "a", "the", "is", etc.
+    
+    const answerLower = trimmedAnswer.toLowerCase();
+    
+    // Check if at least 50% of key words from meaning appear in the answer
+    const matchedWords = meaningWords.filter(word => answerLower.includes(word));
+    const matchPercentage = matchedWords.length / Math.max(meaningWords.length, 1);
+    
+    // Consider it correct if at least 50% of key words match
+    const correct = matchPercentage >= 0.5;
+    
     setIsCorrect(correct);
     setShowAnswer(true);
   };
