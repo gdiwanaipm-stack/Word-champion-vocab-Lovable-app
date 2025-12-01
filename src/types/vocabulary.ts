@@ -19,6 +19,7 @@ export interface UserProgress {
   lastPracticed: string;
   startDate: string;
   completionWeeks: number;
+  difficult?: boolean;
 }
 
 export interface DailyProgress {

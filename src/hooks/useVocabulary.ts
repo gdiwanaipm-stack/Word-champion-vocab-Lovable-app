@@ -169,6 +169,44 @@ export function useVocabulary() {
     return null;
   };
 
+  const toggleDifficultWord = (wordId: string) => {
+    const existingProgress = userProgress.find(p => p.wordId === wordId);
+    
+    if (existingProgress) {
+      setUserProgress(prev => prev.map(p => 
+        p.wordId === wordId
+          ? { ...p, difficult: !p.difficult }
+          : p
+      ));
+    } else {
+      // Create new progress entry if it doesn't exist
+      const today = format(new Date(), 'yyyy-MM-dd');
+      setUserProgress(prev => [...prev, {
+        wordId,
+        attempts: 0,
+        correct: 0,
+        lastPracticed: today,
+        startDate: today,
+        completionWeeks: 0,
+        difficult: true,
+      }]);
+    }
+  };
+
+  const getDifficultWords = () => {
+    return userProgress
+      .filter(p => p.difficult)
+      .map(p => {
+        const word = vocabularyWords.find(w => w.id === p.wordId);
+        return word ? { ...word, progress: p } : null;
+      })
+      .filter(Boolean);
+  };
+
+  const isWordDifficult = (wordId: string) => {
+    return userProgress.find(p => p.wordId === wordId)?.difficult || false;
+  };
+
   return {
     settings,
     setSettings,
@@ -181,5 +219,8 @@ export function useVocabulary() {
     getLearnedWords,
     getProgressionStats,
     checkAndProgressDifficulty,
+    toggleDifficultWord,
+    getDifficultWords,
+    isWordDifficult,
   };
 }

@@ -3,16 +3,18 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { VocabularyWord } from '@/types/vocabulary';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Flag } from 'lucide-react';
 
 interface WordCardProps {
   word: VocabularyWord;
   onComplete: (isCorrect: boolean) => void;
   attemptNumber: number;
   totalAttempts: number;
+  onMarkDifficult?: (wordId: string) => void;
+  isDifficult?: boolean;
 }
 
-export function WordCard({ word, onComplete, attemptNumber, totalAttempts }: WordCardProps) {
+export function WordCard({ word, onComplete, attemptNumber, totalAttempts, onMarkDifficult, isDifficult = false }: WordCardProps) {
   const [userAnswer, setUserAnswer] = useState('');
   const [showAnswer, setShowAnswer] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -61,8 +63,8 @@ export function WordCard({ word, onComplete, attemptNumber, totalAttempts }: Wor
     const totalMatches = new Set([...exactMatches, ...partialMatches]).size;
     const matchPercentage = totalMatches / Math.max(meaningWords.length, 1);
     
-    // Consider it correct if at least 40% of key words match (lowered threshold)
-    const correct = matchPercentage >= 0.4;
+    // Consider it correct if at least 30% of key words match (relaxed threshold)
+    const correct = matchPercentage >= 0.3;
     
     setIsCorrect(correct);
     setShowAnswer(true);
@@ -77,7 +79,20 @@ export function WordCard({ word, onComplete, attemptNumber, totalAttempts }: Wor
   return (
     <Card className="w-full max-w-2xl mx-auto">
       <CardHeader className="text-center">
-        <CardTitle className="text-4xl font-bold text-primary mb-2">{word.word}</CardTitle>
+        <div className="flex items-center justify-center gap-2">
+          <CardTitle className="text-4xl font-bold text-primary mb-2">{word.word}</CardTitle>
+          {onMarkDifficult && (
+            <Button
+              variant={isDifficult ? "default" : "ghost"}
+              size="icon"
+              onClick={() => onMarkDifficult(word.id)}
+              className="mb-2"
+              title={isDifficult ? "Marked as difficult" : "Mark as difficult"}
+            >
+              <Flag className={cn("w-5 h-5", isDifficult && "fill-current")} />
+            </Button>
+          )}
+        </div>
         <CardDescription className="text-lg">
           What does this word mean? (Attempt {attemptNumber} of {totalAttempts})
         </CardDescription>
