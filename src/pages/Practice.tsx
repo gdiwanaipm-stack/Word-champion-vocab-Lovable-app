@@ -28,14 +28,14 @@ export default function Practice() {
     updateProgress(words[currentIndex].id, isCorrect);
     if (isCorrect) setScore(prev => prev + 1);
 
-    // Check if we need to move to the next attempt or next word
-    if (currentAttempt < ATTEMPTS_PER_WORD) {
-      // Move to next attempt for the same word
-      setCurrentAttempt(prev => prev + 1);
-    } else if (currentIndex < words.length - 1) {
-      // Move to next word, reset attempt counter
+    // Check if we should move to next word or next round
+    if (currentIndex < words.length - 1) {
+      // Move to next word in current round
       setCurrentIndex(prev => prev + 1);
-      setCurrentAttempt(1);
+    } else if (currentAttempt < ATTEMPTS_PER_WORD) {
+      // Completed all words, start next round
+      setCurrentIndex(0);
+      setCurrentAttempt(prev => prev + 1);
     } else {
       // All words and attempts completed
       setCompleted(true);
@@ -102,10 +102,10 @@ export default function Practice() {
           {/* Progress indicator */}
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">
-              Word {currentIndex + 1} of {words.length} - Attempt {currentAttempt} of {ATTEMPTS_PER_WORD}
+              Round {currentAttempt} of {ATTEMPTS_PER_WORD} - Word {currentIndex + 1} of {words.length}
             </span>
             <span className="text-sm font-medium text-primary">
-              Score: {score}/{(currentIndex * ATTEMPTS_PER_WORD) + currentAttempt}
+              Score: {score}/{((currentAttempt - 1) * words.length) + currentIndex + 1}
             </span>
           </div>
 
@@ -113,7 +113,7 @@ export default function Practice() {
           <div className="w-full bg-accent rounded-full h-2">
             <div 
               className="bg-primary h-2 rounded-full transition-all duration-300"
-              style={{ width: `${(((currentIndex * ATTEMPTS_PER_WORD) + currentAttempt) / totalAttempts) * 100}%` }}
+              style={{ width: `${((((currentAttempt - 1) * words.length) + currentIndex + 1) / totalAttempts) * 100}%` }}
             />
           </div>
 
