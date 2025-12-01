@@ -21,7 +21,7 @@ export default function Practice() {
   const [showProgressionDialog, setShowProgressionDialog] = useState(false);
   const [newDifficulty, setNewDifficulty] = useState<string>('');
   
-  const ATTEMPTS_PER_WORD = 3;
+  const ATTEMPTS_PER_WORD = 2;
   const totalAttempts = words.length * ATTEMPTS_PER_WORD;
 
   const handleComplete = (isCorrect: boolean) => {
