@@ -8,9 +8,11 @@ import { CheckCircle, XCircle } from 'lucide-react';
 interface WordCardProps {
   word: VocabularyWord;
   onComplete: (isCorrect: boolean) => void;
+  attemptNumber: number;
+  totalAttempts: number;
 }
 
-export function WordCard({ word, onComplete }: WordCardProps) {
+export function WordCard({ word, onComplete, attemptNumber, totalAttempts }: WordCardProps) {
   const [userAnswer, setUserAnswer] = useState('');
   const [showAnswer, setShowAnswer] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
@@ -44,7 +46,7 @@ export function WordCard({ word, onComplete }: WordCardProps) {
       <CardHeader className="text-center">
         <CardTitle className="text-4xl font-bold text-primary mb-2">{word.word}</CardTitle>
         <CardDescription className="text-lg">
-          What does this word mean?
+          What does this word mean? (Attempt {attemptNumber} of {totalAttempts})
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
