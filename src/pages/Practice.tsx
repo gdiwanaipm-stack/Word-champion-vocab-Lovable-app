@@ -12,7 +12,7 @@ import goldTrophy from '@/assets/gold-trophy.png';
 
 export default function Practice() {
   const navigate = useNavigate();
-  const { getTodaysWords, updateProgress, checkAndProgressDifficulty } = useVocabulary();
+  const { getTodaysWords, updateProgress, checkAndProgressDifficulty, toggleDifficultWord, isWordDifficult } = useVocabulary();
   const [words] = useState(() => getTodaysWords());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentAttempt, setCurrentAttempt] = useState(1);
@@ -122,6 +122,8 @@ export default function Practice() {
             onComplete={handleComplete}
             attemptNumber={currentAttempt}
             totalAttempts={ATTEMPTS_PER_WORD}
+            onMarkDifficult={toggleDifficultWord}
+            isDifficult={isWordDifficult(words[currentIndex].id)}
           />
         </div>
       </main>
