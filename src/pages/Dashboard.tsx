@@ -122,7 +122,7 @@ export default function Dashboard() {
           <CardHeader>
             <CardTitle>Today's Practice</CardTitle>
             <CardDescription>
-              Learn 3 new words today and master them over 3 weeks
+              Learn 2 new words today and master them over 2 weeks
             </CardDescription>
           </CardHeader>
           <CardContent>
