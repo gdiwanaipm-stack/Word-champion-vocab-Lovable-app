@@ -31,10 +31,10 @@ export function useVocabulary() {
     const filtered = vocabularyWords.filter(
       word => word.gradeLevel === settings.gradeLevel && word.difficulty === settings.difficulty
     );
-    // Return 3 words, cycling through available ones
-    const startIndex = (Math.floor(Date.now() / (1000 * 60 * 60 * 24)) * 3) % filtered.length;
-    return filtered.slice(startIndex, startIndex + 3).concat(
-      filtered.slice(0, Math.max(0, 3 - (filtered.length - startIndex)))
+    // Return 2 words, cycling through available ones
+    const startIndex = (Math.floor(Date.now() / (1000 * 60 * 60 * 24)) * 2) % filtered.length;
+    return filtered.slice(startIndex, startIndex + 2).concat(
+      filtered.slice(0, Math.max(0, 2 - (filtered.length - startIndex)))
     );
   };
 
