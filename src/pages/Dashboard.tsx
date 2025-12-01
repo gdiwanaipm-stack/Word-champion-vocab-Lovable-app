@@ -10,45 +10,40 @@ import soccerBall from '@/assets/soccer-ball.png';
 import soccerField from '@/assets/soccer-field.png';
 import goldTrophy from '@/assets/gold-trophy.png';
 import silverTrophy from '@/assets/silver-trophy.png';
-
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { dailyProgress, getCurrentWeekProgress, getLearnedWords, getProgressionStats, settings } = useVocabulary();
+  const {
+    dailyProgress,
+    getCurrentWeekProgress,
+    getLearnedWords,
+    getProgressionStats,
+    settings
+  } = useVocabulary();
   const weekProgress = getCurrentWeekProgress();
   const progressionStats = getProgressionStats();
   const today = format(new Date(), 'yyyy-MM-dd');
   const todayProgress = dailyProgress.find(d => d.date === today);
   const learnedWords = getLearnedWords();
-
-  return (
-    <div className="min-h-screen bg-background pb-20 md:pb-0">
+  return <div className="min-h-screen bg-background pb-20 md:pb-0">
       <Navigation />
       
       {/* Hero Section with Soccer Field Background */}
       <div className="relative overflow-hidden">
-        <div 
-          className="absolute inset-0 opacity-20 dark:opacity-10"
-          style={{
-            backgroundImage: `url(${soccerField})`,
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-          }}
-        />
+        <div className="absolute inset-0 opacity-20 dark:opacity-10" style={{
+        backgroundImage: `url(${soccerField})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center'
+      }} />
         <div className="relative container mx-auto px-4 py-12 text-center space-y-4">
-          <img src={soccerBall} alt="Soccer Ball" className="w-20 h-20 mx-auto animate-bounce" />
-          <h1 className="text-5xl font-bold text-foreground">VocabChamp</h1>
+          <img alt="Soccer Ball" className="w-20 h-20 mx-auto animate-bounce" src="/lovable-uploads/0b2c4d42-0b0d-4583-ac7d-a29d63853a79.png" />
+          <h1 className="text-5xl font-bold text-foreground">Vocab Wizard</h1>
           <p className="text-xl text-muted-foreground">Score goals with words!</p>
         </div>
       </div>
       
       <main className="container mx-auto px-4 py-8 space-y-8">
         {/* Progression Tracker */}
-        {settings.autoProgressionEnabled && (
-          <ProgressionCard 
-            stats={progressionStats} 
-            currentDifficulty={settings.difficulty}
-          />
-        )}
+        {settings.autoProgressionEnabled && <ProgressionCard stats={progressionStats} currentDifficulty={settings.difficulty} />}
 
         {/* Quick Stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -106,29 +101,21 @@ export default function Dashboard() {
         </div>
 
         {/* Weekly Reward */}
-        {weekProgress.reward !== 'none' && (
-          <Card className="border-primary bg-primary/5">
+        {weekProgress.reward !== 'none' && <Card className="border-primary bg-primary/5">
             <CardHeader>
               <div className="flex items-center gap-4">
-                <img 
-                  src={weekProgress.reward === 'gold' ? goldTrophy : silverTrophy} 
-                  alt={`${weekProgress.reward} trophy`}
-                  className="w-16 h-16 object-contain"
-                />
+                <img src={weekProgress.reward === 'gold' ? goldTrophy : silverTrophy} alt={`${weekProgress.reward} trophy`} className="w-16 h-16 object-contain" />
                 <div className="flex-1">
                   <CardTitle className="text-2xl">
                     {weekProgress.reward === 'gold' ? 'Gold' : 'Silver'} Cup Champion! 🎉
                   </CardTitle>
                   <CardDescription className="text-base mt-1">
-                    {weekProgress.reward === 'gold' 
-                      ? 'Amazing! You practiced all 7 days this week!' 
-                      : 'Great job! You practiced 5+ days this week!'}
+                    {weekProgress.reward === 'gold' ? 'Amazing! You practiced all 7 days this week!' : 'Great job! You practiced 5+ days this week!'}
                   </CardDescription>
                 </div>
               </div>
             </CardHeader>
-          </Card>
-        )}
+          </Card>}
 
         {/* Today's Practice */}
         <Card>
@@ -139,11 +126,7 @@ export default function Dashboard() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button 
-              onClick={() => navigate('/practice')} 
-              size="lg" 
-              className="w-full"
-            >
+            <Button onClick={() => navigate('/practice')} size="lg" className="w-full">
               {todayProgress?.wordsCompleted === 3 ? 'Practice Again' : 'Start Learning'}
             </Button>
           </CardContent>
@@ -172,6 +155,5 @@ export default function Dashboard() {
           </Card>
         </div>
       </main>
-    </div>
-  );
+    </div>;
 }
