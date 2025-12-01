@@ -3,7 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { VocabularyWord } from '@/types/vocabulary';
-import { CheckCircle, XCircle, Flag } from 'lucide-react';
+import { CheckCircle, XCircle, Flag, Lightbulb } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 interface WordCardProps {
   word: VocabularyWord;
@@ -19,6 +21,9 @@ export function WordCard({ word, onComplete, attemptNumber, totalAttempts, onMar
   const [showAnswer, setShowAnswer] = useState(false);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
   const [error, setError] = useState('');
+  const [hint, setHint] = useState<string | null>(null);
+  const [isLoadingHint, setIsLoadingHint] = useState(false);
+  const { toast } = useToast();
 
   const MIN_ANSWER_LENGTH = 5;
 
@@ -28,6 +33,7 @@ export function WordCard({ word, onComplete, attemptNumber, totalAttempts, onMar
     setShowAnswer(false);
     setIsCorrect(null);
     setError('');
+    setHint(null);
   }, [word.id, attemptNumber]);
 
   const handleSubmit = () => {
@@ -74,6 +80,32 @@ export function WordCard({ word, onComplete, attemptNumber, totalAttempts, onMar
     onComplete(isCorrect ?? false);
   };
 
+  const handleGetHint = async () => {
+    setIsLoadingHint(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-hint', {
+        body: { word: word.word, meaning: word.meaning }
+      });
+
+      if (error) throw error;
+
+      if (data?.hint) {
+        setHint(data.hint);
+      } else {
+        throw new Error('No hint generated');
+      }
+    } catch (error) {
+      console.error('Error generating hint:', error);
+      toast({
+        title: "Couldn't generate hint",
+        description: "Please try again in a moment.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingHint(false);
+    }
+  };
+
   const isValidAnswer = userAnswer.trim().length >= MIN_ANSWER_LENGTH;
 
   return (
@@ -100,6 +132,14 @@ export function WordCard({ word, onComplete, attemptNumber, totalAttempts, onMar
       <CardContent className="space-y-6">
         {!showAnswer ? (
           <div className="space-y-4">
+            {hint && (
+              <div className="p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                <div className="flex items-start gap-2">
+                  <Lightbulb className="w-5 h-5 text-primary mt-0.5 flex-shrink-0" />
+                  <p className="text-sm text-foreground">{hint}</p>
+                </div>
+              </div>
+            )}
             <div className="space-y-2">
               <Input
                 placeholder="Type the meaning here..."
@@ -121,14 +161,26 @@ export function WordCard({ word, onComplete, attemptNumber, totalAttempts, onMar
                 </p>
               )}
             </div>
-            <Button 
-              onClick={handleSubmit} 
-              className="w-full"
-              disabled={!isValidAnswer}
-              size="lg"
-            >
-              Check Answer
-            </Button>
+            <div className="flex gap-2">
+              <Button 
+                onClick={handleGetHint}
+                variant="outline"
+                disabled={isLoadingHint || hint !== null}
+                className="flex-1"
+                size="lg"
+              >
+                <Lightbulb className="w-4 h-4 mr-2" />
+                {isLoadingHint ? "Getting hint..." : hint ? "Hint shown" : "Get Hint"}
+              </Button>
+              <Button 
+                onClick={handleSubmit} 
+                className="flex-1"
+                disabled={!isValidAnswer}
+                size="lg"
+              >
+                Check Answer
+              </Button>
+            </div>
           </div>
         ) : (
           <div className="space-y-6">
