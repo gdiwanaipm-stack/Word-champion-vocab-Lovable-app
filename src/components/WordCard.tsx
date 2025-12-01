@@ -45,13 +45,24 @@ export function WordCard({ word, onComplete, attemptNumber, totalAttempts }: Wor
       .filter(w => w.length > 3); // Filter out small words like "a", "the", "is", etc.
     
     const answerLower = trimmedAnswer.toLowerCase();
+    const answerWords = answerLower.split(/\W+/).filter(w => w.length > 3);
     
-    // Check if at least 50% of key words from meaning appear in the answer
-    const matchedWords = meaningWords.filter(word => answerLower.includes(word));
-    const matchPercentage = matchedWords.length / Math.max(meaningWords.length, 1);
+    // Check if key words from meaning appear in the answer (exact match)
+    const exactMatches = meaningWords.filter(word => answerLower.includes(word));
     
-    // Consider it correct if at least 50% of key words match
-    const correct = matchPercentage >= 0.5;
+    // Check if answer words are similar to meaning words (partial match)
+    const partialMatches = meaningWords.filter(meaningWord => 
+      answerWords.some(answerWord => 
+        meaningWord.includes(answerWord) || answerWord.includes(meaningWord)
+      )
+    );
+    
+    // Combine exact and partial matches
+    const totalMatches = new Set([...exactMatches, ...partialMatches]).size;
+    const matchPercentage = totalMatches / Math.max(meaningWords.length, 1);
+    
+    // Consider it correct if at least 40% of key words match (lowered threshold)
+    const correct = matchPercentage >= 0.4;
     
     setIsCorrect(correct);
     setShowAnswer(true);
