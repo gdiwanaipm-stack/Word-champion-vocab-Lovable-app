@@ -9,7 +9,6 @@ import Practice from "./pages/Practice";
 import Review from "./pages/Review";
 import Progress from "./pages/Progress";
 import Settings from "./pages/Settings";
-import AIVocabulary from "./pages/AIVocabulary";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,7 +25,6 @@ const App = () => (
           <Route path="/practice" element={<Practice />} />
           <Route path="/review" element={<Review />} />
           <Route path="/progress" element={<Progress />} />
-          <Route path="/ai-vocabulary" element={<AIVocabulary />} />
           <Route path="/settings" element={<Settings />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
