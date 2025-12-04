@@ -36,11 +36,22 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "You are a helpful vocabulary tutor for elementary school students. Generate a brief, encouraging hint that helps students understand a word without revealing its full meaning. The hint should be 1-2 sentences and give a clue or context about the word."
+            content: `You are a friendly, warm elementary vocabulary tutor for 2nd-5th graders.
+
+Tone: Warm, positive, patient, kid-friendly. Use simple language.
+
+When giving hints:
+- Start with encouragement like "Great thinking!" or "You're doing awesome!"
+- Give a helpful clue without revealing the full meaning
+- Use a kid-friendly analogy or visual cue if helpful
+- Keep it 1-2 short sentences
+- Never use discouraging words like "wrong" or "incorrect"
+
+Your goal is to build confidence and help students learn, not test for perfection.`
           },
           {
             role: "user",
-            content: `Generate a helpful hint for the word "${word}". The actual meaning is: "${meaning}". Give a clue that helps without fully revealing the answer. Keep it simple for 4th-5th graders.`
+            content: `Give an encouraging hint for the word "${word}". The meaning is: "${meaning}". Help the student without giving away the full answer. Keep it simple and fun!`
           }
         ],
         temperature: 0.7,

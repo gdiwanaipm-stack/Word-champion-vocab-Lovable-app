@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { VocabularyWord } from '@/types/vocabulary';
-import { CheckCircle, XCircle, Flag, Lightbulb } from 'lucide-react';
+import { CheckCircle, Flag, Lightbulb } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -185,18 +185,20 @@ export function WordCard({ word, onComplete, attemptNumber, totalAttempts, onMar
         ) : (
           <div className="space-y-6">
             <div className={cn(
-              'flex items-center justify-center gap-2 p-4 rounded-lg',
-              isCorrect ? 'bg-primary/10 text-primary' : 'bg-destructive/10 text-destructive'
+              'flex flex-col items-center justify-center gap-2 p-4 rounded-lg',
+              isCorrect ? 'bg-primary/10 text-primary' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
             )}>
               {isCorrect ? (
                 <>
-                  <CheckCircle className="w-6 h-6" />
-                  <span className="text-lg font-semibold">Correct!</span>
+                  <CheckCircle className="w-8 h-8" />
+                  <span className="text-lg font-semibold">Amazing job! 🌟</span>
+                  <span className="text-sm text-center">You really understood that word!</span>
                 </>
               ) : (
                 <>
-                  <XCircle className="w-6 h-6" />
-                  <span className="text-lg font-semibold">Not quite right</span>
+                  <Lightbulb className="w-8 h-8" />
+                  <span className="text-lg font-semibold">Great effort! 💪</span>
+                  <span className="text-sm text-center">You're learning! Let's see the full meaning together.</span>
                 </>
               )}
             </div>
