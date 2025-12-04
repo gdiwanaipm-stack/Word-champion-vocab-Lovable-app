@@ -1,13 +1,17 @@
 import { Navigation } from '@/components/Navigation';
-import { useVocabulary } from '@/hooks/useVocabulary';
+import { useVocabularyDB } from '@/hooks/useVocabularyDB';
+import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
+import { Button } from '@/components/ui/button';
 import { useEffect } from 'react';
+import { LogOut } from 'lucide-react';
 
 export default function Settings() {
-  const { settings, setSettings } = useVocabulary();
+  const { settings, setSettings, loading } = useVocabularyDB();
+  const { signOut, user } = useAuth();
 
   useEffect(() => {
     if (settings.darkMode) {
@@ -16,6 +20,17 @@ export default function Settings() {
       document.documentElement.classList.remove('dark');
     }
   }, [settings.darkMode]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background pb-20 md:pb-0">
+        <Navigation />
+        <div className="flex items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
@@ -27,6 +42,26 @@ export default function Settings() {
             <h1 className="text-3xl font-bold text-foreground">Settings</h1>
             <p className="text-muted-foreground">Customize your learning experience</p>
           </div>
+
+          {/* Account Info */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Account</CardTitle>
+              <CardDescription>Your account information</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <Label>Email</Label>
+                  <p className="text-sm text-muted-foreground">{user?.email}</p>
+                </div>
+                <Button variant="outline" onClick={signOut} className="gap-2">
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
           <Card>
             <CardHeader>

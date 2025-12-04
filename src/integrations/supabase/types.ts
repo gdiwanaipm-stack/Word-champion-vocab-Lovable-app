@@ -14,7 +14,105 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      daily_progress: {
+        Row: {
+          completed: boolean
+          created_at: string
+          date: string
+          id: string
+          user_id: string
+          words_correct: number
+          words_practiced: number
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          date?: string
+          id?: string
+          user_id: string
+          words_correct?: number
+          words_practiced?: number
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          date?: string
+          id?: string
+          user_id?: string
+          words_correct?: number
+          words_practiced?: number
+        }
+        Relationships: []
+      }
+      user_progress: {
+        Row: {
+          attempts: number
+          correct: number
+          created_at: string
+          id: string
+          is_difficult: boolean
+          last_practiced: string | null
+          updated_at: string
+          user_id: string
+          word_id: string
+        }
+        Insert: {
+          attempts?: number
+          correct?: number
+          created_at?: string
+          id?: string
+          is_difficult?: boolean
+          last_practiced?: string | null
+          updated_at?: string
+          user_id: string
+          word_id: string
+        }
+        Update: {
+          attempts?: number
+          correct?: number
+          created_at?: string
+          id?: string
+          is_difficult?: boolean
+          last_practiced?: string | null
+          updated_at?: string
+          user_id?: string
+          word_id?: string
+        }
+        Relationships: []
+      }
+      user_settings: {
+        Row: {
+          auto_progression: boolean
+          created_at: string
+          dark_mode: boolean
+          difficulty: string
+          grade_level: string
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_progression?: boolean
+          created_at?: string
+          dark_mode?: boolean
+          difficulty?: string
+          grade_level?: string
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_progression?: boolean
+          created_at?: string
+          dark_mode?: boolean
+          difficulty?: string
+          grade_level?: string
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
