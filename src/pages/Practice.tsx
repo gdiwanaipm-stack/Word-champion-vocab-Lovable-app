@@ -55,6 +55,15 @@ export default function Practice() {
     );
   }
 
+  const handlePracticeMore = () => {
+    setCurrentIndex(0);
+    setCurrentAttempt(1);
+    setCompleted(false);
+    setScore(0);
+    setShowProgressionDialog(false);
+    setNewDifficulty('');
+  };
+
   if (completed) {
     return (
       <div className="min-h-screen bg-background pb-20 md:pb-0">
@@ -85,12 +94,15 @@ export default function Practice() {
                   ? "Perfect score! You're a vocabulary champion! ⚽" 
                   : "Great effort! Keep practicing to improve your score!"}
               </p>
-              <div className="flex gap-4 justify-center">
-                <Button onClick={() => navigate('/dashboard')} variant="outline">
-                  Back to Dashboard
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button onClick={handlePracticeMore} size="lg">
+                  Practice More Words
                 </Button>
-                <Button onClick={() => navigate('/review')}>
+                <Button onClick={() => navigate('/review')} variant="outline">
                   Review Words
+                </Button>
+                <Button onClick={() => navigate('/dashboard')} variant="ghost">
+                  Back to Dashboard
                 </Button>
               </div>
             </CardContent>
