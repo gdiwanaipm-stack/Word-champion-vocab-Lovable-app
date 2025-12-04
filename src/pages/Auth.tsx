@@ -8,7 +8,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { useToast } from '@/hooks/use-toast';
 import { z } from 'zod';
 import soccerBall from '@/assets/soccer-ball.png';
-import soccerField from '@/assets/soccer-field.png';
 
 const emailSchema = z.string().trim().email({ message: "Please enter a valid email address" }).max(255);
 const passwordSchema = z.string().min(6, { message: "Password must be at least 6 characters" }).max(72);
@@ -57,47 +56,29 @@ export default function Auth() {
       if (isLogin) {
         const { error } = await signIn(email, password);
         if (error) {
-          if (error.message.includes('Invalid login credentials')) {
-            toast({
-              title: "Login failed",
-              description: "Invalid email or password. Please try again.",
-              variant: "destructive",
-            });
-          } else {
-            toast({
-              title: "Login failed",
-              description: error.message,
-              variant: "destructive",
-            });
-          }
-        } else {
           toast({
-            title: "Welcome back!",
-            description: "You've successfully logged in.",
+            title: "Login failed",
+            description: error.message.includes('Invalid login credentials') 
+              ? "Invalid email or password. Please try again."
+              : error.message,
+            variant: "destructive",
           });
+        } else {
+          toast({ title: "Welcome back!", description: "You've successfully logged in." });
           navigate('/');
         }
       } else {
         const { error } = await signUp(email, password);
         if (error) {
-          if (error.message.includes('already registered')) {
-            toast({
-              title: "Account exists",
-              description: "This email is already registered. Try logging in instead.",
-              variant: "destructive",
-            });
-          } else {
-            toast({
-              title: "Sign up failed",
-              description: error.message,
-              variant: "destructive",
-            });
-          }
-        } else {
           toast({
-            title: "Account created!",
-            description: "Welcome to Vocabulary Soccer! Start learning today.",
+            title: "Sign up failed",
+            description: error.message.includes('already registered')
+              ? "This email is already registered. Try logging in instead."
+              : error.message,
+            variant: "destructive",
           });
+        } else {
+          toast({ title: "Account created!", description: "Welcome to Vocabulary Soccer!" });
           navigate('/');
         }
       }
@@ -108,28 +89,24 @@ export default function Auth() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background gap-4">
+        <img src={soccerBall} alt="Loading" className="w-16 h-16 animate-bounce" />
+        <p className="text-muted-foreground">Loading...</p>
       </div>
     );
   }
 
   return (
-    <div 
-      className="min-h-screen flex items-center justify-center p-4 bg-cover bg-center relative"
-      style={{ backgroundImage: `url(${soccerField})` }}
-    >
-      <div className="absolute inset-0 bg-background/80 backdrop-blur-sm" />
-      
-      <Card className="w-full max-w-md relative z-10 shadow-xl">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-primary/10 to-background">
+      <Card className="w-full max-w-md shadow-xl">
         <CardHeader className="text-center space-y-2">
           <div className="flex justify-center mb-2">
             <img src={soccerBall} alt="Soccer ball" className="w-16 h-16 animate-bounce" />
           </div>
-          <CardTitle className="text-2xl font-bold text-foreground">
+          <CardTitle className="text-2xl font-bold">
             {isLogin ? 'Welcome Back!' : 'Join the Team!'}
           </CardTitle>
-          <CardDescription className="text-muted-foreground">
+          <CardDescription>
             {isLogin 
               ? 'Sign in to continue your vocabulary journey' 
               : 'Create an account to track your progress'}
@@ -170,14 +147,8 @@ export default function Auth() {
           </CardContent>
           
           <CardFooter className="flex flex-col space-y-4">
-            <Button 
-              type="submit" 
-              className="w-full"
-              disabled={isSubmitting}
-            >
-              {isSubmitting 
-                ? 'Loading...' 
-                : isLogin ? 'Sign In' : 'Create Account'}
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? 'Loading...' : isLogin ? 'Sign In' : 'Create Account'}
             </Button>
             
             <Button
