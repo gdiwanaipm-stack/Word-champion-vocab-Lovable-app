@@ -1,12 +1,23 @@
 import { Navigation } from '@/components/Navigation';
-import { useVocabulary } from '@/hooks/useVocabulary';
+import { useVocabularyDB } from '@/hooks/useVocabularyDB';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BookOpen } from 'lucide-react';
 
 export default function Review() {
-  const { getLearnedWords } = useVocabulary();
+  const { getLearnedWords, loading } = useVocabularyDB();
   const learnedWords = getLearnedWords();
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background pb-20 md:pb-0">
+        <Navigation />
+        <div className="flex items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">

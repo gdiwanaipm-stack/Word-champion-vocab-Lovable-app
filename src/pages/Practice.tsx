@@ -1,18 +1,17 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { WordCard } from '@/components/WordCard';
 import { ProgressionDialog } from '@/components/ProgressionDialog';
-import { useVocabulary } from '@/hooks/useVocabulary';
+import { useVocabularyDB } from '@/hooks/useVocabularyDB';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { Trophy, PartyPopper } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import soccerPlayer from '@/assets/soccer-player.png';
 import goldTrophy from '@/assets/gold-trophy.png';
 
 export default function Practice() {
   const navigate = useNavigate();
-  const { getTodaysWords, updateProgress, checkAndProgressDifficulty, toggleDifficultWord, isWordDifficult } = useVocabulary();
+  const { getTodaysWords, updateProgress, checkAndProgressDifficulty, toggleDifficultWord, isWordDifficult, loading } = useVocabularyDB();
   const [words] = useState(() => getTodaysWords());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentAttempt, setCurrentAttempt] = useState(1);
@@ -24,29 +23,35 @@ export default function Practice() {
   const ATTEMPTS_PER_WORD = 2;
   const totalAttempts = words.length * ATTEMPTS_PER_WORD;
 
-  const handleComplete = (isCorrect: boolean) => {
-    updateProgress(words[currentIndex].id, isCorrect);
+  const handleComplete = async (isCorrect: boolean) => {
+    await updateProgress(words[currentIndex].id, isCorrect);
     if (isCorrect) setScore(prev => prev + 1);
 
-    // Check if we should move to next word or next round
     if (currentIndex < words.length - 1) {
-      // Move to next word in current round
       setCurrentIndex(prev => prev + 1);
     } else if (currentAttempt < ATTEMPTS_PER_WORD) {
-      // Completed all words, start next round
       setCurrentIndex(0);
       setCurrentAttempt(prev => prev + 1);
     } else {
-      // All words and attempts completed
       setCompleted(true);
-      // Check for difficulty progression after completing practice
-      const progressedDifficulty = checkAndProgressDifficulty();
+      const progressedDifficulty = await checkAndProgressDifficulty();
       if (progressedDifficulty) {
         setNewDifficulty(progressedDifficulty);
         setShowProgressionDialog(true);
       }
     }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background pb-20 md:pb-0">
+        <Navigation />
+        <div className="flex items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
 
   if (completed) {
     return (
@@ -99,7 +104,6 @@ export default function Practice() {
       
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto space-y-6">
-          {/* Progress indicator */}
           <div className="flex items-center justify-between">
             <span className="text-sm text-muted-foreground">
               Round {currentAttempt} of {ATTEMPTS_PER_WORD} - Word {currentIndex + 1} of {words.length}
@@ -109,7 +113,6 @@ export default function Practice() {
             </span>
           </div>
 
-          {/* Progress bar */}
           <div className="w-full bg-accent rounded-full h-2">
             <div 
               className="bg-primary h-2 rounded-full transition-all duration-300"

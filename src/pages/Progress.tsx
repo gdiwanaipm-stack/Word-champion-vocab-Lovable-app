@@ -1,5 +1,5 @@
 import { Navigation } from '@/components/Navigation';
-import { useVocabulary } from '@/hooks/useVocabulary';
+import { useVocabularyDB } from '@/hooks/useVocabularyDB';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Trophy } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -8,10 +8,9 @@ import goldTrophy from '@/assets/gold-trophy.png';
 import silverTrophy from '@/assets/silver-trophy.png';
 
 export default function Progress() {
-  const { dailyProgress, weeklyProgress, getCurrentWeekProgress } = useVocabulary();
+  const { dailyProgress, getCurrentWeekProgress, loading } = useVocabularyDB();
   const currentWeek = getCurrentWeekProgress();
 
-  // Get last 7 days data
   const last7Days = Array.from({ length: 7 }, (_, i) => {
     const date = subDays(new Date(), 6 - i);
     const dateStr = format(date, 'yyyy-MM-dd');
@@ -24,6 +23,17 @@ export default function Progress() {
     };
   });
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background pb-20 md:pb-0">
+        <Navigation />
+        <div className="flex items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <Navigation />
@@ -35,7 +45,6 @@ export default function Progress() {
             <p className="text-muted-foreground">Track your vocabulary learning journey</p>
           </div>
 
-          {/* Current Week Status */}
           <Card>
             <CardHeader>
               <div className="flex items-center gap-3">
@@ -86,7 +95,6 @@ export default function Progress() {
             </CardContent>
           </Card>
 
-          {/* Last 7 Days Chart */}
           <Card>
             <CardHeader>
               <CardTitle>Last 7 Days Activity</CardTitle>
@@ -124,7 +132,6 @@ export default function Progress() {
             </CardContent>
           </Card>
 
-          {/* Rewards Info */}
           <Card>
             <CardHeader>
               <CardTitle>Weekly Rewards System</CardTitle>
