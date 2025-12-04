@@ -120,14 +120,45 @@ export function useVocabularyDB() {
   }, [user, settings]);
 
   const getTodaysWords = useCallback(() => {
+    const today = format(new Date(), 'yyyy-MM-dd');
     const filtered = vocabularyWords.filter(
       word => word.gradeLevel === settings.gradeLevel && word.difficulty === settings.difficulty
     );
-    const startIndex = (Math.floor(Date.now() / (1000 * 60 * 60 * 24)) * 2) % filtered.length;
-    return filtered.slice(startIndex, startIndex + 2).concat(
-      filtered.slice(0, Math.max(0, 2 - (filtered.length - startIndex)))
+    
+    // Get words practiced today
+    const practicedTodayIds = userProgress
+      .filter(p => p.lastPracticed === today)
+      .map(p => p.wordId);
+    
+    // Filter out words already completed today (practiced at least twice today)
+    const todayAttempts = new Map<string, number>();
+    userProgress.forEach(p => {
+      if (p.lastPracticed === today) {
+        todayAttempts.set(p.wordId, p.attempts);
+      }
+    });
+    
+    // Get words not yet fully practiced today
+    const availableWords = filtered.filter(word => {
+      const attempts = todayAttempts.get(word.id) || 0;
+      return attempts < 2; // Each word needs 2 rounds
+    });
+    
+    // If all words are completed, return fresh words from the full list
+    if (availableWords.length === 0) {
+      const startIndex = (Math.floor(Date.now() / (1000 * 60 * 60 * 24)) * 2) % filtered.length;
+      return filtered.slice(startIndex, startIndex + 2).concat(
+        filtered.slice(0, Math.max(0, 2 - (filtered.length - startIndex)))
+      );
+    }
+    
+    // Return next 2 available words
+    const dayOffset = Math.floor(Date.now() / (1000 * 60 * 60 * 24));
+    const startIndex = (dayOffset * 2) % availableWords.length;
+    return availableWords.slice(startIndex, startIndex + 2).concat(
+      availableWords.slice(0, Math.max(0, 2 - (availableWords.length - startIndex)))
     );
-  }, [settings.gradeLevel, settings.difficulty]);
+  }, [settings.gradeLevel, settings.difficulty, userProgress]);
 
   const updateProgress = useCallback(async (wordId: string, isCorrect: boolean) => {
     if (!user) return;

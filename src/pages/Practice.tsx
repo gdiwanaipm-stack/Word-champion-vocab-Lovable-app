@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { WordCard } from '@/components/WordCard';
 import { ProgressionDialog } from '@/components/ProgressionDialog';
@@ -11,8 +11,10 @@ import goldTrophy from '@/assets/gold-trophy.png';
 
 export default function Practice() {
   const navigate = useNavigate();
-  const { getTodaysWords, updateProgress, checkAndProgressDifficulty, toggleDifficultWord, isWordDifficult, loading } = useVocabularyDB();
-  const [words] = useState(() => getTodaysWords());
+  const { getTodaysWords, updateProgress, checkAndProgressDifficulty, toggleDifficultWord, isWordDifficult, loading, userProgress } = useVocabularyDB();
+  
+  // Get fresh words that respond to progress changes
+  const words = useMemo(() => getTodaysWords(), [getTodaysWords, userProgress]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentAttempt, setCurrentAttempt] = useState(1);
   const [completed, setCompleted] = useState(false);
