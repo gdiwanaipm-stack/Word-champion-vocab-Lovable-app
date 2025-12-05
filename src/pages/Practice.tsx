@@ -64,6 +64,40 @@ export default function Practice() {
     setNewDifficulty('');
   };
 
+  if (words.length === 0) {
+    return (
+      <div className="min-h-screen bg-background pb-20 md:pb-0">
+        <Navigation />
+        <main className="container mx-auto px-4 py-8">
+          <Card className="max-w-2xl mx-auto text-center">
+            <CardHeader>
+              <div className="flex justify-center mb-4">
+                <img src={goldTrophy} alt="Gold Trophy" className="w-32 h-32 object-contain" />
+              </div>
+              <CardTitle className="text-3xl">All Done for Today!</CardTitle>
+              <CardDescription className="text-lg mt-2">
+                You've practiced all available words at this level.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <p className="text-muted-foreground">
+                Come back tomorrow for more practice or try a different difficulty level!
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                <Button onClick={() => navigate('/settings')} size="lg">
+                  Change Difficulty
+                </Button>
+                <Button onClick={() => navigate('/dashboard')} variant="outline">
+                  Back to Dashboard
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </main>
+      </div>
+    );
+  }
+
   if (completed) {
     return (
       <div className="min-h-screen bg-background pb-20 md:pb-0">
