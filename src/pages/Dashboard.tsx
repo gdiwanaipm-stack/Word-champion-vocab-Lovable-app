@@ -3,7 +3,7 @@ import { ProgressionCard } from '@/components/ProgressionCard';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import { useVocabularyDB } from '@/hooks/useVocabularyDB';
+import { useVocabulary } from '@/hooks/useVocabulary';
 import { Trophy, Target, Book, Zap } from 'lucide-react';
 import { format } from 'date-fns';
 import soccerBall from '@/assets/soccer-ball.png';
@@ -20,7 +20,7 @@ export default function Dashboard() {
     getProgressionStats,
     settings,
     loading
-  } = useVocabularyDB();
+  } = useVocabulary();
   const weekProgress = getCurrentWeekProgress();
   const progressionStats = getProgressionStats();
   const today = format(new Date(), 'yyyy-MM-dd');

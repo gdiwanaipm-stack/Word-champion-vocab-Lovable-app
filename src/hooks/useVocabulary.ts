@@ -1,7 +1,7 @@
 import { useLocalStorage } from './useLocalStorage';
 import { UserSettings, UserProgress, DailyProgress, WeeklyProgress } from '@/types/vocabulary';
 import { vocabularyWords } from '@/data/vocabulary';
-import { startOfWeek, format, isWithinInterval, addDays } from 'date-fns';
+import { startOfWeek, format, addDays } from 'date-fns';
 
 const defaultSettings: UserSettings = {
   gradeLevel: 'elementary',
@@ -14,10 +14,9 @@ const DIFFICULTY_PROGRESSION: { [key: string]: string } = {
   'easy': 'medium',
   'medium': 'hard',
   'hard': 'very-hard',
-  'very-hard': 'very-hard', // Max difficulty
+  'very-hard': 'very-hard',
 };
 
-// Thresholds: need 80% accuracy on at least 15 words to progress
 const PROGRESSION_THRESHOLD = 0.80;
 const MIN_WORDS_FOR_PROGRESSION = 15;
 
@@ -28,20 +27,36 @@ export function useVocabulary() {
   const [weeklyProgress, setWeeklyProgress] = useLocalStorage<WeeklyProgress[]>('vocab-weekly', []);
 
   const getTodaysWords = () => {
+    const today = format(new Date(), 'yyyy-MM-dd');
     const filtered = vocabularyWords.filter(
       word => word.gradeLevel === settings.gradeLevel && word.difficulty === settings.difficulty
     );
-    // Return 2 words, cycling through available ones
-    const startIndex = (Math.floor(Date.now() / (1000 * 60 * 60 * 24)) * 2) % filtered.length;
-    return filtered.slice(startIndex, startIndex + 2).concat(
-      filtered.slice(0, Math.max(0, 2 - (filtered.length - startIndex)))
+    
+    // Get IDs of words already practiced today
+    const practicedTodayIds = new Set(
+      userProgress
+        .filter(p => p.lastPracticed === today)
+        .map(p => p.wordId)
     );
+    
+    // Get words not yet practiced today
+    const availableWords = filtered.filter(word => !practicedTodayIds.has(word.id));
+    
+    // If all words at this difficulty are completed today, allow re-practicing
+    if (availableWords.length === 0) {
+      const startIndex = (Math.floor(Date.now() / (1000 * 60 * 60 * 24)) * 2) % filtered.length;
+      return filtered.slice(startIndex, startIndex + 2).concat(
+        filtered.slice(0, Math.max(0, 2 - (filtered.length - startIndex)))
+      );
+    }
+    
+    // Return next 2 available unpracticed words
+    return availableWords.slice(0, 2);
   };
 
   const updateProgress = (wordId: string, isCorrect: boolean) => {
     const today = format(new Date(), 'yyyy-MM-dd');
     
-    // Update user progress for this word
     const existingProgress = userProgress.find(p => p.wordId === wordId);
     if (existingProgress) {
       setUserProgress(prev => prev.map(p => 
@@ -65,7 +80,6 @@ export function useVocabulary() {
       }]);
     }
 
-    // Update daily progress
     const todayProgress = dailyProgress.find(d => d.date === today);
     if (todayProgress) {
       setDailyProgress(prev => prev.map(d =>
@@ -91,7 +105,6 @@ export function useVocabulary() {
     const weekStart = startOfWeek(today, { weekStartsOn: 0 });
     const weekStartStr = format(weekStart, 'yyyy-MM-dd');
 
-    // Count days with progress this week
     const daysInWeek = Array.from({ length: 7 }, (_, i) => {
       const date = addDays(weekStart, i);
       return format(date, 'yyyy-MM-dd');
@@ -123,20 +136,16 @@ export function useVocabulary() {
   };
 
   const getProgressionStats = () => {
-    // Get progress for current difficulty level
     const currentDifficultyWords = userProgress.filter(p => {
       const word = vocabularyWords.find(w => w.id === p.wordId);
       return word?.difficulty === settings.difficulty && word?.gradeLevel === settings.gradeLevel;
     });
 
     const wordsAtCurrentDifficulty = currentDifficultyWords.length;
-    
-    // Calculate accuracy for current difficulty
     const totalAttempts = currentDifficultyWords.reduce((sum, p) => sum + p.attempts, 0);
     const totalCorrect = currentDifficultyWords.reduce((sum, p) => sum + p.correct, 0);
     const currentAccuracy = totalAttempts > 0 ? totalCorrect / totalAttempts : 0;
 
-    // Check if ready for progression
     const isReadyForProgression = 
       wordsAtCurrentDifficulty >= MIN_WORDS_FOR_PROGRESSION && 
       currentAccuracy >= PROGRESSION_THRESHOLD &&
@@ -179,7 +188,6 @@ export function useVocabulary() {
           : p
       ));
     } else {
-      // Create new progress entry if it doesn't exist
       const today = format(new Date(), 'yyyy-MM-dd');
       setUserProgress(prev => [...prev, {
         wordId,
@@ -222,5 +230,6 @@ export function useVocabulary() {
     toggleDifficultWord,
     getDifficultWords,
     isWordDifficult,
+    loading: false,
   };
 }

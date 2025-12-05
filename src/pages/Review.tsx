@@ -1,11 +1,11 @@
 import { Navigation } from '@/components/Navigation';
-import { useVocabularyDB } from '@/hooks/useVocabularyDB';
+import { useVocabulary } from '@/hooks/useVocabulary';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { BookOpen } from 'lucide-react';
 
 export default function Review() {
-  const { getLearnedWords, loading } = useVocabularyDB();
+  const { getLearnedWords, loading } = useVocabulary();
   const learnedWords = getLearnedWords();
 
   if (loading) {
