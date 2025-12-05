@@ -1,5 +1,5 @@
 import { Navigation } from '@/components/Navigation';
-import { useVocabularyDB } from '@/hooks/useVocabularyDB';
+import { useVocabulary } from '@/hooks/useVocabulary';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Trophy } from 'lucide-react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
@@ -8,7 +8,7 @@ import goldTrophy from '@/assets/gold-trophy.png';
 import silverTrophy from '@/assets/silver-trophy.png';
 
 export default function Progress() {
-  const { dailyProgress, getCurrentWeekProgress, loading } = useVocabularyDB();
+  const { dailyProgress, getCurrentWeekProgress, loading } = useVocabulary();
   const currentWeek = getCurrentWeekProgress();
 
   const last7Days = Array.from({ length: 7 }, (_, i) => {
