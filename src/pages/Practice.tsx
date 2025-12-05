@@ -64,7 +64,7 @@ export default function Practice() {
     setNewDifficulty('');
   };
 
-  if (words.length === 0) {
+  if (words.length === 0 || !words[currentIndex]) {
     return (
       <div className="min-h-screen bg-background pb-20 md:pb-0">
         <Navigation />
