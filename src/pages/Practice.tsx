@@ -11,8 +11,10 @@ import goldTrophy from '@/assets/gold-trophy.png';
 
 export default function Practice() {
   const navigate = useNavigate();
-  const { getTodaysWords, updateProgress, checkAndProgressDifficulty, toggleDifficultWord, isWordDifficult, loading, userProgress } = useVocabulary();
+  const { getTodaysWords, updateProgress, checkAndProgressDifficulty, toggleDifficultWord, isWordDifficult, loading } = useVocabulary();
   
+  // Track all word IDs practiced in this session to exclude them from future rounds
+  const [practicedWordIds, setPracticedWordIds] = useState<string[]>([]);
   const [words, setWords] = useState(() => getTodaysWords());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentAttempt, setCurrentAttempt] = useState(1);
@@ -25,7 +27,8 @@ export default function Practice() {
   const totalAttempts = words.length * ATTEMPTS_PER_WORD;
 
   const handleComplete = async (isCorrect: boolean) => {
-    await updateProgress(words[currentIndex].id, isCorrect);
+    const currentWordId = words[currentIndex].id;
+    await updateProgress(currentWordId, isCorrect);
     if (isCorrect) setScore(prev => prev + 1);
 
     if (currentIndex < words.length - 1) {
@@ -34,6 +37,8 @@ export default function Practice() {
       setCurrentIndex(0);
       setCurrentAttempt(prev => prev + 1);
     } else {
+      // Session complete - add current words to practiced list
+      setPracticedWordIds(prev => [...prev, ...words.map(w => w.id)]);
       setCompleted(true);
       const progressedDifficulty = await checkAndProgressDifficulty();
       if (progressedDifficulty) {
@@ -55,8 +60,8 @@ export default function Practice() {
   }
 
   const handlePracticeMore = () => {
-    // Fetch fresh words that haven't been practiced today
-    const freshWords = getTodaysWords();
+    // Fetch fresh words, excluding all words practiced in this session
+    const freshWords = getTodaysWords(practicedWordIds);
     setWords(freshWords);
     setCurrentIndex(0);
     setCurrentAttempt(1);

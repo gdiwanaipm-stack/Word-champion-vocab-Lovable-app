@@ -26,18 +26,21 @@ export function useVocabulary() {
   const [dailyProgress, setDailyProgress] = useLocalStorage<DailyProgress[]>('vocab-daily', []);
   const [weeklyProgress, setWeeklyProgress] = useLocalStorage<WeeklyProgress[]>('vocab-weekly', []);
 
-  const getTodaysWords = () => {
+  const getTodaysWords = (excludeWordIds: string[] = []) => {
     const today = format(new Date(), 'yyyy-MM-dd');
     const filtered = vocabularyWords.filter(
       word => word.gradeLevel === settings.gradeLevel && word.difficulty === settings.difficulty
     );
     
-    // Get IDs of words already practiced today
+    // Get IDs of words already practiced today from stored progress
     const practicedTodayIds = new Set(
       userProgress
         .filter(p => p.lastPracticed === today)
         .map(p => p.wordId)
     );
+    
+    // Also exclude any additionally specified word IDs (e.g., from current session)
+    excludeWordIds.forEach(id => practicedTodayIds.add(id));
     
     // Get words not yet practiced today
     const availableWords = filtered.filter(word => !practicedTodayIds.has(word.id));
