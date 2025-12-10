@@ -45,16 +45,17 @@ export function useVocabulary() {
     // Get words not yet practiced today
     const availableWords = filtered.filter(word => !practicedTodayIds.has(word.id));
     
-    // If all words at this difficulty are completed today, allow re-practicing
-    if (availableWords.length === 0) {
-      const startIndex = (Math.floor(Date.now() / (1000 * 60 * 60 * 24)) * 2) % filtered.length;
-      return filtered.slice(startIndex, startIndex + 2).concat(
-        filtered.slice(0, Math.max(0, 2 - (filtered.length - startIndex)))
-      );
+    // Shuffle available words to randomize selection
+    const shuffled = [...availableWords].sort(() => Math.random() - 0.5);
+    
+    // If all words at this difficulty are completed today, shuffle all and return 2
+    if (shuffled.length === 0) {
+      const allShuffled = [...filtered].sort(() => Math.random() - 0.5);
+      return allShuffled.slice(0, 2);
     }
     
-    // Return next 2 available unpracticed words
-    return availableWords.slice(0, 2);
+    // Return next 2 random unpracticed words
+    return shuffled.slice(0, 2);
   };
 
   const updateProgress = (wordId: string, isCorrect: boolean) => {
