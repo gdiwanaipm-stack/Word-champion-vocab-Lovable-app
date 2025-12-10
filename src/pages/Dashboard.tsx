@@ -4,7 +4,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { useVocabulary } from '@/hooks/useVocabulary';
-import { Trophy, Target, Book, Zap } from 'lucide-react';
+import { Trophy, Target, Book, Zap, RotateCcw } from 'lucide-react';
+import { toast } from 'sonner';
 import { format } from 'date-fns';
 import soccerBall from '@/assets/soccer-ball.png';
 import soccerField from '@/assets/soccer-field.png';
@@ -19,8 +20,14 @@ export default function Dashboard() {
     getLearnedWords,
     getProgressionStats,
     settings,
-    loading
+    loading,
+    resetTodaysProgress
   } = useVocabulary();
+
+  const handleResetToday = () => {
+    resetTodaysProgress();
+    toast.success("Today's progress has been reset. All words are available again!");
+  };
   const weekProgress = getCurrentWeekProgress();
   const progressionStats = getProgressionStats();
   const today = format(new Date(), 'yyyy-MM-dd');
@@ -157,10 +164,21 @@ export default function Dashboard() {
               Learn 2 new words today and master them over 2 weeks
             </CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="space-y-3">
             <Button onClick={() => navigate('/practice')} size="lg" className="w-full">
               {todayProgress?.wordsCompleted === 3 ? 'Practice Again' : 'Start Learning'}
             </Button>
+            {todayProgress && todayProgress.wordsCompleted > 0 && (
+              <Button 
+                onClick={handleResetToday} 
+                variant="outline" 
+                size="sm" 
+                className="w-full"
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Reset Today's Progress
+              </Button>
+            )}
           </CardContent>
         </Card>
 

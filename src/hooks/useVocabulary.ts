@@ -219,6 +219,20 @@ export function useVocabulary() {
     return userProgress.find(p => p.wordId === wordId)?.difficult || false;
   };
 
+  const resetTodaysProgress = () => {
+    const today = format(new Date(), 'yyyy-MM-dd');
+    
+    // Clear today's lastPracticed from user progress
+    setUserProgress(prev => prev.map(p => 
+      p.lastPracticed === today
+        ? { ...p, lastPracticed: undefined }
+        : p
+    ));
+    
+    // Remove today's daily progress entry
+    setDailyProgress(prev => prev.filter(d => d.date !== today));
+  };
+
   return {
     settings,
     setSettings,
@@ -234,6 +248,7 @@ export function useVocabulary() {
     toggleDifficultWord,
     getDifficultWords,
     isWordDifficult,
+    resetTodaysProgress,
     loading: false,
   };
 }
