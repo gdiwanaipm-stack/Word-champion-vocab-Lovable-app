@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { WordCard } from '@/components/WordCard';
 import { ProgressionDialog } from '@/components/ProgressionDialog';
@@ -13,8 +13,7 @@ export default function Practice() {
   const navigate = useNavigate();
   const { getTodaysWords, updateProgress, checkAndProgressDifficulty, toggleDifficultWord, isWordDifficult, loading, userProgress } = useVocabulary();
   
-  // Get fresh words that respond to progress changes
-  const words = useMemo(() => getTodaysWords(), [getTodaysWords, userProgress]);
+  const [words, setWords] = useState(() => getTodaysWords());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentAttempt, setCurrentAttempt] = useState(1);
   const [completed, setCompleted] = useState(false);
@@ -56,6 +55,9 @@ export default function Practice() {
   }
 
   const handlePracticeMore = () => {
+    // Fetch fresh words that haven't been practiced today
+    const freshWords = getTodaysWords();
+    setWords(freshWords);
     setCurrentIndex(0);
     setCurrentAttempt(1);
     setCompleted(false);
