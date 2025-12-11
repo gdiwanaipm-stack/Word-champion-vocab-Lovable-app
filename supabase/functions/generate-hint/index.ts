@@ -1,9 +1,14 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+// Input validation constants
+const MAX_WORD_LENGTH = 100;
+const MAX_MEANING_LENGTH = 500;
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -11,11 +16,60 @@ serve(async (req) => {
   }
 
   try {
-    const { word, meaning } = await req.json();
-    
-    if (!word || !meaning) {
+    // Verify authentication
+    const authHeader = req.headers.get("Authorization");
+    if (!authHeader) {
       return new Response(
-        JSON.stringify({ error: "Word and meaning are required" }),
+        JSON.stringify({ error: "Missing authorization header" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseAnonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } },
+    });
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return new Response(
+        JSON.stringify({ error: "Unauthorized" }),
+        { status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const body = await req.json();
+    const { word, meaning } = body;
+    
+    // Input validation
+    if (!word || typeof word !== "string") {
+      return new Response(
+        JSON.stringify({ error: "Word is required and must be a string" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+    
+    if (!meaning || typeof meaning !== "string") {
+      return new Response(
+        JSON.stringify({ error: "Meaning is required and must be a string" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    const trimmedWord = word.trim();
+    const trimmedMeaning = meaning.trim();
+
+    if (trimmedWord.length === 0 || trimmedWord.length > MAX_WORD_LENGTH) {
+      return new Response(
+        JSON.stringify({ error: `Word must be between 1 and ${MAX_WORD_LENGTH} characters` }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    if (trimmedMeaning.length === 0 || trimmedMeaning.length > MAX_MEANING_LENGTH) {
+      return new Response(
+        JSON.stringify({ error: `Meaning must be between 1 and ${MAX_MEANING_LENGTH} characters` }),
         { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
@@ -51,7 +105,7 @@ Your goal is to build confidence and help students learn, not test for perfectio
           },
           {
             role: "user",
-            content: `Give an encouraging hint for the word "${word}". The meaning is: "${meaning}". Help the student without giving away the full answer. Keep it simple and fun!`
+            content: `Give an encouraging hint for the word "${trimmedWord}". The meaning is: "${trimmedMeaning}". Help the student without giving away the full answer. Keep it simple and fun!`
           }
         ],
         temperature: 0.7,
@@ -91,7 +145,7 @@ Your goal is to build confidence and help students learn, not test for perfectio
   } catch (error) {
     console.error("Error generating hint:", error);
     return new Response(
-      JSON.stringify({ error: error instanceof Error ? error.message : "Failed to generate hint" }),
+      JSON.stringify({ error: "Failed to generate hint" }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   }
