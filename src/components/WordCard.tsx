@@ -36,6 +36,42 @@ export function WordCard({ word, onComplete, attemptNumber, totalAttempts, onMar
     setHint(null);
   }, [word.id, attemptNumber]);
 
+  // Simple Levenshtein distance for typo tolerance
+  const getEditDistance = (a: string, b: string): number => {
+    const matrix: number[][] = [];
+    for (let i = 0; i <= b.length; i++) {
+      matrix[i] = [i];
+    }
+    for (let j = 0; j <= a.length; j++) {
+      matrix[0][j] = j;
+    }
+    for (let i = 1; i <= b.length; i++) {
+      for (let j = 1; j <= a.length; j++) {
+        if (b.charAt(i - 1) === a.charAt(j - 1)) {
+          matrix[i][j] = matrix[i - 1][j - 1];
+        } else {
+          matrix[i][j] = Math.min(
+            matrix[i - 1][j - 1] + 1,
+            matrix[i][j - 1] + 1,
+            matrix[i - 1][j] + 1
+          );
+        }
+      }
+    }
+    return matrix[b.length][a.length];
+  };
+
+  // Check if two words are similar (allowing typos)
+  const areWordsSimilar = (word1: string, word2: string): boolean => {
+    if (word1 === word2) return true;
+    if (word1.includes(word2) || word2.includes(word1)) return true;
+    
+    // Allow more typos for longer words
+    const maxDistance = word1.length <= 4 ? 1 : word1.length <= 7 ? 2 : 3;
+    const distance = getEditDistance(word1, word2);
+    return distance <= maxDistance;
+  };
+
   const handleSubmit = () => {
     const trimmedAnswer = userAnswer.trim();
     
@@ -50,26 +86,19 @@ export function WordCard({ word, onComplete, attemptNumber, totalAttempts, onMar
     // Very lenient checking: extract key words from the meaning
     const meaningWords = word.meaning.toLowerCase()
       .split(/\W+/)
-      .filter(w => w.length > 2); // Include more words (>2 chars instead of >3)
+      .filter(w => w.length > 2);
     
     const answerLower = trimmedAnswer.toLowerCase();
     const answerWords = answerLower.split(/\W+/).filter(w => w.length > 2);
     
-    // Check if key words from meaning appear in the answer (exact match)
-    const exactMatches = meaningWords.filter(word => answerLower.includes(word));
-    
-    // Check if answer words are similar to meaning words (partial match)
-    const partialMatches = meaningWords.filter(meaningWord => 
-      answerWords.some(answerWord => 
-        meaningWord.includes(answerWord) || answerWord.includes(meaningWord)
-      )
+    // Check for matches including typo tolerance
+    const matchedMeaningWords = meaningWords.filter(meaningWord => 
+      answerWords.some(answerWord => areWordsSimilar(meaningWord, answerWord))
     );
     
-    // Combine exact and partial matches
-    const totalMatches = new Set([...exactMatches, ...partialMatches]).size;
-    const matchPercentage = totalMatches / Math.max(meaningWords.length, 1);
+    const matchPercentage = matchedMeaningWords.length / Math.max(meaningWords.length, 1);
     
-    // Consider it correct if at least 15% of key words match (very relaxed threshold for subjective meanings)
+    // Consider it correct if at least 15% of key words match
     const correct = matchPercentage >= 0.15;
     
     setIsCorrect(correct);
