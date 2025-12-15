@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { VocabularyWord } from '@/types/vocabulary';
-import { CheckCircle, Flag, Lightbulb } from 'lucide-react';
+import { CheckCircle, Flag, Lightbulb, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -16,6 +16,8 @@ interface WordCardProps {
   isDifficult?: boolean;
 }
 
+type EvaluationResult = 'correct' | 'almost' | 'incorrect';
+
 export function WordCard({ 
   word, 
   onComplete, 
@@ -26,10 +28,12 @@ export function WordCard({
 }: WordCardProps) {
   const [userAnswer, setUserAnswer] = useState('');
   const [showAnswer, setShowAnswer] = useState(false);
-  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [evaluationResult, setEvaluationResult] = useState<EvaluationResult | null>(null);
+  const [feedback, setFeedback] = useState<string>('');
   const [error, setError] = useState('');
   const [hint, setHint] = useState<string | null>(null);
   const [isLoadingHint, setIsLoadingHint] = useState(false);
+  const [isEvaluating, setIsEvaluating] = useState(false);
   const { toast } = useToast();
 
   const MIN_ANSWER_LENGTH = 5;
@@ -38,48 +42,13 @@ export function WordCard({
   useEffect(() => {
     setUserAnswer('');
     setShowAnswer(false);
-    setIsCorrect(null);
+    setEvaluationResult(null);
+    setFeedback('');
     setError('');
     setHint(null);
   }, [word.id, attemptNumber]);
 
-  // Simple Levenshtein distance for typo tolerance
-  const getEditDistance = (a: string, b: string): number => {
-    const matrix: number[][] = [];
-    for (let i = 0; i <= b.length; i++) {
-      matrix[i] = [i];
-    }
-    for (let j = 0; j <= a.length; j++) {
-      matrix[0][j] = j;
-    }
-    for (let i = 1; i <= b.length; i++) {
-      for (let j = 1; j <= a.length; j++) {
-        if (b.charAt(i - 1) === a.charAt(j - 1)) {
-          matrix[i][j] = matrix[i - 1][j - 1];
-        } else {
-          matrix[i][j] = Math.min(
-            matrix[i - 1][j - 1] + 1,
-            matrix[i][j - 1] + 1,
-            matrix[i - 1][j] + 1
-          );
-        }
-      }
-    }
-    return matrix[b.length][a.length];
-  };
-
-  // Check if two words are similar (allowing typos)
-  const areWordsSimilar = (word1: string, word2: string): boolean => {
-    if (word1 === word2) return true;
-    if (word1.includes(word2) || word2.includes(word1)) return true;
-    
-    // Allow more typos for longer words
-    const maxDistance = word1.length <= 4 ? 1 : word1.length <= 7 ? 2 : 3;
-    const distance = getEditDistance(word1, word2);
-    return distance <= maxDistance;
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const trimmedAnswer = userAnswer.trim();
     
     // Validate answer length
@@ -89,31 +58,40 @@ export function WordCard({
     }
     
     setError('');
-    
-    // Very lenient checking: extract key words from the meaning
-    const meaningWords = word.meaning.toLowerCase()
-      .split(/\W+/)
-      .filter(w => w.length > 2);
-    
-    const answerLower = trimmedAnswer.toLowerCase();
-    const answerWords = answerLower.split(/\W+/).filter(w => w.length > 2);
-    
-    // Check for matches including typo tolerance
-    const matchedMeaningWords = meaningWords.filter(meaningWord => 
-      answerWords.some(answerWord => areWordsSimilar(meaningWord, answerWord))
-    );
-    
-    const matchPercentage = matchedMeaningWords.length / Math.max(meaningWords.length, 1);
-    
-    // Consider it correct if at least 10% of key words match (allows subjectivity)
-    const correct = matchPercentage >= 0.10;
-    
-    setIsCorrect(correct);
-    setShowAnswer(true);
+    setIsEvaluating(true);
+
+    try {
+      const { data, error: evalError } = await supabase.functions.invoke('evaluate-answer', {
+        body: { 
+          word: word.word, 
+          meaning: word.meaning,
+          studentAnswer: trimmedAnswer
+        }
+      });
+
+      if (evalError) throw evalError;
+
+      const result = data?.result || 'correct';
+      const aiFeedback = data?.feedback || "Great effort! You're doing wonderfully!";
+      
+      setEvaluationResult(result as EvaluationResult);
+      setFeedback(aiFeedback);
+      setShowAnswer(true);
+    } catch (error) {
+      console.error('Error evaluating answer:', error);
+      // Fallback to lenient grading on error
+      setEvaluationResult('correct');
+      setFeedback("Great effort! You're doing wonderfully!");
+      setShowAnswer(true);
+    } finally {
+      setIsEvaluating(false);
+    }
   };
 
   const handleNext = () => {
-    onComplete(isCorrect ?? false);
+    // Both 'correct' and 'almost' count as correct for progression
+    const isCorrect = evaluationResult === 'correct' || evaluationResult === 'almost';
+    onComplete(isCorrect);
   };
 
   const handleGetHint = async () => {
@@ -143,6 +121,46 @@ export function WordCard({
   };
 
   const isValidAnswer = userAnswer.trim().length >= MIN_ANSWER_LENGTH;
+
+  const getResultStyles = () => {
+    switch (evaluationResult) {
+      case 'correct':
+        return 'bg-primary/10 text-primary';
+      case 'almost':
+        return 'bg-amber-500/10 text-amber-600 dark:text-amber-400';
+      case 'incorrect':
+        return 'bg-muted text-muted-foreground';
+      default:
+        return '';
+    }
+  };
+
+  const getResultContent = () => {
+    switch (evaluationResult) {
+      case 'correct':
+        return {
+          icon: <CheckCircle className="w-8 h-8" />,
+          title: "Amazing job! 🌟",
+          subtitle: "You really understood that word!"
+        };
+      case 'almost':
+        return {
+          icon: <Lightbulb className="w-8 h-8" />,
+          title: "So close! 💪",
+          subtitle: "You're almost there! Let's learn a bit more."
+        };
+      case 'incorrect':
+        return {
+          icon: <Lightbulb className="w-8 h-8" />,
+          title: "Great effort! 💪",
+          subtitle: "Let's learn this word together!"
+        };
+      default:
+        return { icon: null, title: '', subtitle: '' };
+    }
+  };
+
+  const resultContent = getResultContent();
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
@@ -184,9 +202,10 @@ export function WordCard({
                   setUserAnswer(e.target.value);
                   setError('');
                 }}
-                onKeyDown={(e) => e.key === 'Enter' && isValidAnswer && handleSubmit()}
+                onKeyDown={(e) => e.key === 'Enter' && isValidAnswer && !isEvaluating && handleSubmit()}
                 className="text-lg"
                 autoFocus
+                disabled={isEvaluating}
               />
               {error && (
                 <p className="text-sm text-destructive">{error}</p>
@@ -201,7 +220,7 @@ export function WordCard({
               <Button 
                 onClick={handleGetHint}
                 variant="outline"
-                disabled={isLoadingHint || hint !== null}
+                disabled={isLoadingHint || hint !== null || isEvaluating}
                 className="flex-1"
                 size="lg"
               >
@@ -211,10 +230,17 @@ export function WordCard({
               <Button 
                 onClick={handleSubmit} 
                 className="flex-1"
-                disabled={!isValidAnswer}
+                disabled={!isValidAnswer || isEvaluating}
                 size="lg"
               >
-                Check Answer
+                {isEvaluating ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Checking...
+                  </>
+                ) : (
+                  'Check Answer'
+                )}
               </Button>
             </div>
           </div>
@@ -222,22 +248,19 @@ export function WordCard({
           <div className="space-y-6">
             <div className={cn(
               'flex flex-col items-center justify-center gap-2 p-4 rounded-lg',
-              isCorrect ? 'bg-primary/10 text-primary' : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+              getResultStyles()
             )}>
-              {isCorrect ? (
-                <>
-                  <CheckCircle className="w-8 h-8" />
-                  <span className="text-lg font-semibold">Amazing job! 🌟</span>
-                  <span className="text-sm text-center">You really understood that word!</span>
-                </>
-              ) : (
-                <>
-                  <Lightbulb className="w-8 h-8" />
-                  <span className="text-lg font-semibold">Great effort! 💪</span>
-                  <span className="text-sm text-center">You're learning! Let's see the full meaning together.</span>
-                </>
-              )}
+              {resultContent.icon}
+              <span className="text-lg font-semibold">{resultContent.title}</span>
+              <span className="text-sm text-center">{resultContent.subtitle}</span>
             </div>
+
+            {/* AI Feedback */}
+            {feedback && (
+              <div className="p-4 bg-primary/5 border border-primary/10 rounded-lg">
+                <p className="text-sm text-foreground text-center">{feedback}</p>
+              </div>
+            )}
 
             <div className="space-y-4 p-4 bg-accent rounded-lg">
               <div>
@@ -277,6 +300,6 @@ export function WordCard({
   );
 }
 
-function cn(...classes: string[]) {
+function cn(...classes: (string | boolean | undefined)[]) {
   return classes.filter(Boolean).join(' ');
 }
