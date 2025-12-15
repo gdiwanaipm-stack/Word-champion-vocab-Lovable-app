@@ -2,7 +2,10 @@ import { useState } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { WordCard } from '@/components/WordCard';
 import { ProgressionDialog } from '@/components/ProgressionDialog';
+import { BreakReminderDialog } from '@/components/BreakReminderDialog';
+import { DailyLimitCard } from '@/components/DailyLimitCard';
 import { useVocabulary } from '@/hooks/useVocabulary';
+import { useUsageLimits } from '@/hooks/useUsageLimits';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,6 +15,19 @@ import goldTrophy from '@/assets/gold-trophy.png';
 export default function Practice() {
   const navigate = useNavigate();
   const { getTodaysWords, updateProgress, checkAndProgressDifficulty, toggleDifficultWord, isWordDifficult, loading } = useVocabulary();
+  const { 
+    wordsPracticedToday,
+    isDailyLimitReached, 
+    isHintLimitReached, 
+    hintsRemaining,
+    wordsRemainingToday,
+    shouldShowBreakReminder,
+    incrementWordsCompleted,
+    incrementHintsUsed,
+    dismissBreakReminder,
+    resetSession,
+    limits
+  } = useUsageLimits();
   
   // Track all word IDs practiced in this session to exclude them from future rounds
   const [practicedWordIds, setPracticedWordIds] = useState<string[]>([]);
@@ -30,6 +46,11 @@ export default function Practice() {
     const currentWordId = words[currentIndex].id;
     await updateProgress(currentWordId, isCorrect);
     if (isCorrect) setScore(prev => prev + 1);
+    
+    // Track word completion for usage limits (only on first attempt)
+    if (currentAttempt === 1) {
+      incrementWordsCompleted();
+    }
 
     if (currentIndex < words.length - 1) {
       setCurrentIndex(prev => prev + 1);
@@ -60,6 +81,11 @@ export default function Practice() {
   }
 
   const handlePracticeMore = () => {
+    // Check if daily limit reached
+    if (isDailyLimitReached) {
+      return; // Button will be disabled, but safety check
+    }
+    
     // Fetch fresh words, excluding all words practiced in this session
     const freshWords = getTodaysWords(practicedWordIds);
     setWords(freshWords);
@@ -69,7 +95,20 @@ export default function Practice() {
     setScore(0);
     setShowProgressionDialog(false);
     setNewDifficulty('');
+    resetSession(); // Reset session-based limits (hints)
   };
+
+  // Show daily limit reached screen
+  if (isDailyLimitReached) {
+    return (
+      <div className="min-h-screen bg-background pb-20 md:pb-0">
+        <Navigation />
+        <main className="container mx-auto px-4 py-8">
+          <DailyLimitCard wordsPracticed={wordsPracticedToday} />
+        </main>
+      </div>
+    );
+  }
 
   if (words.length === 0 || !words[currentIndex]) {
     return (
@@ -157,6 +196,13 @@ export default function Practice() {
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <Navigation />
       
+      {/* Break reminder dialog */}
+      <BreakReminderDialog
+        isOpen={shouldShowBreakReminder}
+        onDismiss={dismissBreakReminder}
+        wordsPracticed={wordsPracticedToday}
+      />
+      
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-2xl mx-auto space-y-6">
           <div className="flex items-center justify-between">
@@ -166,6 +212,12 @@ export default function Practice() {
             <span className="text-sm font-medium text-primary">
               Score: {score}/{((currentAttempt - 1) * words.length) + currentIndex + 1}
             </span>
+          </div>
+          
+          {/* Usage stats bar */}
+          <div className="flex items-center justify-between text-xs text-muted-foreground bg-accent/50 px-3 py-2 rounded-lg">
+            <span>Today: {wordsPracticedToday}/{limits.MAX_WORDS_PER_DAY} words</span>
+            <span>Hints: {hintsRemaining} remaining</span>
           </div>
 
           <div className="w-full bg-accent rounded-full h-2">
@@ -182,6 +234,9 @@ export default function Practice() {
             totalAttempts={ATTEMPTS_PER_WORD}
             onMarkDifficult={toggleDifficultWord}
             isDifficult={isWordDifficult(words[currentIndex].id)}
+            isHintLimitReached={isHintLimitReached}
+            hintsRemaining={hintsRemaining}
+            onHintUsed={incrementHintsUsed}
           />
         </div>
       </main>
