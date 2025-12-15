@@ -14,9 +14,6 @@ interface WordCardProps {
   totalAttempts: number;
   onMarkDifficult?: (wordId: string) => void;
   isDifficult?: boolean;
-  isHintLimitReached?: boolean;
-  hintsRemaining?: number;
-  onHintUsed?: () => void;
 }
 
 export function WordCard({ 
@@ -25,10 +22,7 @@ export function WordCard({
   attemptNumber, 
   totalAttempts, 
   onMarkDifficult, 
-  isDifficult = false,
-  isHintLimitReached = false,
-  hintsRemaining = 0,
-  onHintUsed
+  isDifficult = false
 }: WordCardProps) {
   const [userAnswer, setUserAnswer] = useState('');
   const [showAnswer, setShowAnswer] = useState(false);
@@ -123,15 +117,6 @@ export function WordCard({
   };
 
   const handleGetHint = async () => {
-    if (isHintLimitReached) {
-      toast({
-        title: "Hint limit reached",
-        description: "You've used all your hints for this session. Try your best!",
-        variant: "default",
-      });
-      return;
-    }
-    
     setIsLoadingHint(true);
     try {
       const { data, error } = await supabase.functions.invoke('generate-hint', {
@@ -142,7 +127,6 @@ export function WordCard({
 
       if (data?.hint) {
         setHint(data.hint);
-        onHintUsed?.(); // Track hint usage
       } else {
         throw new Error('No hint generated');
       }
@@ -159,7 +143,6 @@ export function WordCard({
   };
 
   const isValidAnswer = userAnswer.trim().length >= MIN_ANSWER_LENGTH;
-  const hintButtonDisabled = isLoadingHint || hint !== null || isHintLimitReached;
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
@@ -218,13 +201,12 @@ export function WordCard({
               <Button 
                 onClick={handleGetHint}
                 variant="outline"
-                disabled={hintButtonDisabled}
+                disabled={isLoadingHint || hint !== null}
                 className="flex-1"
                 size="lg"
-                title={isHintLimitReached ? `No hints remaining` : `${hintsRemaining} hints remaining`}
               >
                 <Lightbulb className="w-4 h-4 mr-2" />
-                {isLoadingHint ? "Getting hint..." : hint ? "Hint shown" : isHintLimitReached ? "No hints left" : "Get Hint"}
+                {isLoadingHint ? "Getting hint..." : hint ? "Hint shown" : "Get Hint"}
               </Button>
               <Button 
                 onClick={handleSubmit} 

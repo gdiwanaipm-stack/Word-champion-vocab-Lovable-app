@@ -3,14 +3,11 @@ import { useState, useEffect } from 'react';
 // Usage limits configuration
 const LIMITS = {
   MAX_WORDS_PER_DAY: 20, // Maximum words to practice in one day
-  MAX_HINTS_PER_SESSION: 3, // Maximum hints per practice session
   BREAK_REMINDER_WORDS: 10, // Suggest break after this many words
-  MIN_BREAK_MINUTES: 5, // Minimum break duration in minutes
 };
 
 interface UsageState {
   wordsPracticedToday: number;
-  hintsUsedThisSession: number;
   sessionStartTime: number;
   lastBreakTime: number;
   breakReminderDismissed: boolean;
@@ -26,7 +23,6 @@ export function useUsageLimits() {
     
     const daily = dailyData ? JSON.parse(dailyData) : { wordsPracticedToday: 0 };
     const session = sessionData ? JSON.parse(sessionData) : { 
-      hintsUsedThisSession: 0,
       sessionStartTime: Date.now(),
       lastBreakTime: Date.now(),
       breakReminderDismissed: false
@@ -42,7 +38,6 @@ export function useUsageLimits() {
     }));
     
     sessionStorage.setItem(SESSION_KEY, JSON.stringify({
-      hintsUsedThisSession: usage.hintsUsedThisSession,
       sessionStartTime: usage.sessionStartTime,
       lastBreakTime: usage.lastBreakTime,
       breakReminderDismissed: usage.breakReminderDismissed
@@ -53,13 +48,6 @@ export function useUsageLimits() {
     setUsage(prev => ({
       ...prev,
       wordsPracticedToday: prev.wordsPracticedToday + 1
-    }));
-  };
-
-  const incrementHintsUsed = () => {
-    setUsage(prev => ({
-      ...prev,
-      hintsUsedThisSession: prev.hintsUsedThisSession + 1
     }));
   };
 
@@ -74,7 +62,6 @@ export function useUsageLimits() {
   const resetSession = () => {
     setUsage(prev => ({
       ...prev,
-      hintsUsedThisSession: 0,
       sessionStartTime: Date.now(),
       lastBreakTime: Date.now(),
       breakReminderDismissed: false
@@ -83,12 +70,6 @@ export function useUsageLimits() {
 
   // Check if daily limit reached
   const isDailyLimitReached = usage.wordsPracticedToday >= LIMITS.MAX_WORDS_PER_DAY;
-  
-  // Check if hints limit reached for this session
-  const isHintLimitReached = usage.hintsUsedThisSession >= LIMITS.MAX_HINTS_PER_SESSION;
-  
-  // Calculate remaining hints
-  const hintsRemaining = Math.max(0, LIMITS.MAX_HINTS_PER_SESSION - usage.hintsUsedThisSession);
   
   // Calculate remaining words for today
   const wordsRemainingToday = Math.max(0, LIMITS.MAX_WORDS_PER_DAY - usage.wordsPracticedToday);
@@ -102,18 +83,14 @@ export function useUsageLimits() {
   return {
     // State
     wordsPracticedToday: usage.wordsPracticedToday,
-    hintsUsedThisSession: usage.hintsUsedThisSession,
     
     // Limits
     isDailyLimitReached,
-    isHintLimitReached,
-    hintsRemaining,
     wordsRemainingToday,
     shouldShowBreakReminder,
     
     // Actions
     incrementWordsCompleted,
-    incrementHintsUsed,
     dismissBreakReminder,
     resetSession,
     
