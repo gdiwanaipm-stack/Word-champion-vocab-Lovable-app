@@ -105,8 +105,8 @@ export function WordCard({
     
     const matchPercentage = matchedMeaningWords.length / Math.max(meaningWords.length, 1);
     
-    // Consider it correct if at least 20% of key words match (allows subjectivity)
-    const correct = matchPercentage >= 0.20;
+    // Consider it correct if at least 10% of key words match (allows subjectivity)
+    const correct = matchPercentage >= 0.10;
     
     setIsCorrect(correct);
     setShowAnswer(true);
