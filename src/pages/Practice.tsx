@@ -18,12 +18,9 @@ export default function Practice() {
   const { 
     wordsPracticedToday,
     isDailyLimitReached, 
-    isHintLimitReached, 
-    hintsRemaining,
     wordsRemainingToday,
     shouldShowBreakReminder,
     incrementWordsCompleted,
-    incrementHintsUsed,
     dismissBreakReminder,
     resetSession,
     limits
@@ -215,9 +212,8 @@ export default function Practice() {
           </div>
           
           {/* Usage stats bar */}
-          <div className="flex items-center justify-between text-xs text-muted-foreground bg-accent/50 px-3 py-2 rounded-lg">
+          <div className="flex items-center justify-center text-xs text-muted-foreground bg-accent/50 px-3 py-2 rounded-lg">
             <span>Today: {wordsPracticedToday}/{limits.MAX_WORDS_PER_DAY} words</span>
-            <span>Hints: {hintsRemaining} remaining</span>
           </div>
 
           <div className="w-full bg-accent rounded-full h-2">
@@ -234,9 +230,6 @@ export default function Practice() {
             totalAttempts={ATTEMPTS_PER_WORD}
             onMarkDifficult={toggleDifficultWord}
             isDifficult={isWordDifficult(words[currentIndex].id)}
-            isHintLimitReached={isHintLimitReached}
-            hintsRemaining={hintsRemaining}
-            onHintUsed={incrementHintsUsed}
           />
         </div>
       </main>
