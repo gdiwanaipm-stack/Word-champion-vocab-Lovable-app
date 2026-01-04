@@ -1,6 +1,53 @@
 import { VocabularyWord } from '@/types/vocabulary';
 
 export const vocabularyWords: VocabularyWord[] = [
+  // Elementary - Easy (from Grade 5 Vocabulary)
+  {
+    id: 'elem-easy-11',
+    word: 'Intact',
+    difficulty: 'easy',
+    gradeLevel: 'elementary',
+    meaning: 'Staying complete, whole, or with no damage',
+    adjectiveExample: 'The team\'s winning streak remained intact after ten games.',
+    nounExample: 'Keeping the ball intact during transport was important.',
+  },
+  {
+    id: 'elem-easy-12',
+    word: 'Instant',
+    difficulty: 'easy',
+    gradeLevel: 'elementary',
+    meaning: 'A very short time; just a moment',
+    nounExample: 'The goal happened in an instant.',
+    adjectiveExample: 'The team\'s instant reaction saved the game.',
+  },
+  {
+    id: 'elem-easy-13',
+    word: 'Resemble',
+    difficulty: 'easy',
+    gradeLevel: 'elementary',
+    meaning: 'To look alike or similar to',
+    verbExample: 'Her playing style resembles that of a professional.',
+    nounExample: 'The resemblance between the two players was striking.',
+  },
+  {
+    id: 'elem-easy-14',
+    word: 'Resign',
+    difficulty: 'easy',
+    gradeLevel: 'elementary',
+    meaning: 'To give up a job or duty',
+    verbExample: 'The coach decided to resign after the season ended.',
+    nounExample: 'His resignation surprised the whole team.',
+  },
+  {
+    id: 'elem-easy-15',
+    word: 'Solo',
+    difficulty: 'easy',
+    gradeLevel: 'elementary',
+    meaning: 'A performance by one person',
+    nounExample: 'The player made a solo run toward the goal.',
+    adjectiveExample: 'Her solo effort resulted in a spectacular goal.',
+  },
+
   // Elementary - Easy
   {
     id: 'elem-easy-1',
@@ -93,6 +140,26 @@ export const vocabularyWords: VocabularyWord[] = [
     nounExample: 'Water is an essential for athletes.',
   },
 
+  // Elementary - Medium (from Grade 5 Vocabulary)
+  {
+    id: 'elem-med-11',
+    word: 'Tumble',
+    difficulty: 'medium',
+    gradeLevel: 'elementary',
+    meaning: 'To perform somersaults, rolls, or leaps',
+    verbExample: 'The goalkeeper had to tumble to make the save.',
+    nounExample: 'His tumble on the field drew gasps from the crowd.',
+  },
+  {
+    id: 'elem-med-12',
+    word: 'Soldiers',
+    difficulty: 'medium',
+    gradeLevel: 'elementary',
+    meaning: 'A person who serves in the army',
+    nounExample: 'The defenders stood like soldiers protecting their goal.',
+    verbExample: 'The team soldiered on despite being behind.',
+  },
+
   // Elementary - Medium
   {
     id: 'elem-med-1',
@@ -183,6 +250,35 @@ export const vocabularyWords: VocabularyWord[] = [
     meaning: 'A skillful way of doing something',
     nounExample: 'Good technique is essential for scoring goals.',
     adjectiveExample: 'Her technical skills impressed the scouts.',
+  },
+
+  // Elementary - Hard (from Grade 5 Vocabulary)
+  {
+    id: 'elem-hard-11',
+    word: 'Poverty',
+    difficulty: 'hard',
+    gradeLevel: 'elementary',
+    meaning: 'The condition of being poor',
+    nounExample: 'Many great players rose from poverty to become stars.',
+    adjectiveExample: 'Growing up in poverty made her work harder.',
+  },
+  {
+    id: 'elem-hard-12',
+    word: 'Typhoon',
+    difficulty: 'hard',
+    gradeLevel: 'elementary',
+    meaning: 'A hurricane that happens in the western Pacific area',
+    nounExample: 'The match was postponed due to the approaching typhoon.',
+    adjectiveExample: 'The typhoon-like winds made playing difficult.',
+  },
+  {
+    id: 'elem-hard-13',
+    word: 'Trout',
+    difficulty: 'hard',
+    gradeLevel: 'elementary',
+    meaning: 'A type of fish that usually lives in fresh water',
+    nounExample: 'The team went fishing for trout during their retreat.',
+    adjectiveExample: 'The trout-filled stream was near the training camp.',
   },
 
   // Elementary - Hard
