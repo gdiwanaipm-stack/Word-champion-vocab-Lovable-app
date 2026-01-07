@@ -71,13 +71,13 @@ serve(async (req) => {
 Tone: Warm, positive, patient, kid-friendly. Use simple language.
 
 When giving hints:
-- Start with encouragement like "Great thinking!" or "You're doing awesome!"
-- Give a helpful clue without revealing the full meaning
-- Use a kid-friendly analogy or visual cue if helpful
-- Keep it 1-2 short sentences
-- Never use discouraging words like "wrong" or "incorrect"
+- Keep it SHORT: 1 sentence only
+- Make it ACTIONABLE: tell them what to think about or try
+- Example: "Think about what you do when you're really excited about something!"
+- NO fluff or extra encouragement - just the helpful clue
+- Never reveal the answer directly
 
-Your goal is to build confidence and help students learn, not test for perfection.`
+Your goal is to nudge them in the right direction quickly.`
           },
           {
             role: "user",
