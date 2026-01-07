@@ -44,6 +44,33 @@ export type Database = {
         }
         Relationships: []
       }
+      session_feedback: {
+        Row: {
+          created_at: string
+          id: string
+          improvements: string | null
+          likes: string | null
+          session_date: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          improvements?: string | null
+          likes?: string | null
+          session_date?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          improvements?: string | null
+          likes?: string | null
+          session_date?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_progress: {
         Row: {
           attempts: number
