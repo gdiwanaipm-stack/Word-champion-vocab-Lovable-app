@@ -4,6 +4,7 @@ import { WordCard } from '@/components/WordCard';
 import { ProgressionDialog } from '@/components/ProgressionDialog';
 import { BreakReminderDialog } from '@/components/BreakReminderDialog';
 import { DailyLimitCard } from '@/components/DailyLimitCard';
+import { SessionFeedbackDialog } from '@/components/SessionFeedbackDialog';
 import { useVocabulary } from '@/hooks/useVocabulary';
 import { useUsageLimits } from '@/hooks/useUsageLimits';
 import { Button } from '@/components/ui/button';
@@ -34,6 +35,7 @@ export default function Practice() {
   const [completed, setCompleted] = useState(false);
   const [score, setScore] = useState(0);
   const [showProgressionDialog, setShowProgressionDialog] = useState(false);
+  const [showFeedbackDialog, setShowFeedbackDialog] = useState(false);
   const [newDifficulty, setNewDifficulty] = useState<string>('');
   
   const ATTEMPTS_PER_WORD = 2;
@@ -63,6 +65,8 @@ export default function Practice() {
         setNewDifficulty(progressedDifficulty);
         setShowProgressionDialog(true);
       }
+      // Show feedback dialog after session
+      setShowFeedbackDialog(true);
     }
   };
 
@@ -91,6 +95,7 @@ export default function Practice() {
     setCompleted(false);
     setScore(0);
     setShowProgressionDialog(false);
+    setShowFeedbackDialog(false);
     setNewDifficulty('');
     resetSession(); // Reset session-based limits (hints)
   };
@@ -149,6 +154,10 @@ export default function Practice() {
           isOpen={showProgressionDialog}
           onClose={() => setShowProgressionDialog(false)}
           newDifficulty={newDifficulty}
+        />
+        <SessionFeedbackDialog 
+          open={showFeedbackDialog && !showProgressionDialog}
+          onClose={() => setShowFeedbackDialog(false)}
         />
         <main className="container mx-auto px-4 py-8">
           <Card className="max-w-2xl mx-auto text-center">
