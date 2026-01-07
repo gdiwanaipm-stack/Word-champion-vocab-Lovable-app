@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Navigation } from '@/components/Navigation';
 import { WordCard } from '@/components/WordCard';
 import { ProgressionDialog } from '@/components/ProgressionDialog';
@@ -12,6 +12,19 @@ import { useNavigate } from 'react-router-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import soccerPlayer from '@/assets/soccer-player.png';
 import goldTrophy from '@/assets/gold-trophy.png';
+
+const FEEDBACK_SESSIONS = [1, 5]; // Show feedback on 1st and 5th session
+
+function getSessionCount(): number {
+  const stored = localStorage.getItem('vocab_session_count');
+  return stored ? parseInt(stored, 10) : 0;
+}
+
+function incrementSessionCount(): number {
+  const newCount = getSessionCount() + 1;
+  localStorage.setItem('vocab_session_count', newCount.toString());
+  return newCount;
+}
 
 export default function Practice() {
   const navigate = useNavigate();
@@ -65,8 +78,11 @@ export default function Practice() {
         setNewDifficulty(progressedDifficulty);
         setShowProgressionDialog(true);
       }
-      // Show feedback dialog after session
-      setShowFeedbackDialog(true);
+      // Increment session count and show feedback only on 1st and 5th sessions
+      const sessionNum = incrementSessionCount();
+      if (FEEDBACK_SESSIONS.includes(sessionNum)) {
+        setShowFeedbackDialog(true);
+      }
     }
   };
 
