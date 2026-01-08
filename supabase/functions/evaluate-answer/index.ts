@@ -79,6 +79,10 @@ SCORING RUBRIC (0–5 total):
 - usage (0–2): Can the student apply it in context (sentence/example)? (2=correct, 1=somewhat, 0=not shown/incorrect)
 - precision (0–1): Is the meaning accurate vs vague or wrong nuance? (1=precise enough, 0=vague/incorrect nuance)
 
+SPELLING TOLERANCE:
+- IGNORE spelling mistakes completely. Focus only on whether the student understands the meaning.
+- "definatly", "recieve", "seperate" etc. should NOT affect scoring if the meaning is correct.
+
 STRICTNESS RULES - Do NOT be overly generous:
 - If the response is unrelated, too vague, or incorrect, give core_meaning=0.
 - Only set is_correct_enough=true if total_score >= 3 AND core_meaning == 2 (80% accuracy threshold on meaning).
