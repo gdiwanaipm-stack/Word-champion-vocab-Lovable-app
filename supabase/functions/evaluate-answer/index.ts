@@ -124,7 +124,6 @@ STUDENT'S ANSWER: "${trimmedAnswer}"
 Evaluate using the scoring rubric. Return ONLY the JSON object.`
           }
         ],
-        temperature: 0.2,
       }),
     });
 
