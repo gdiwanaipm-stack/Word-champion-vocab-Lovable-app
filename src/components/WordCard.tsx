@@ -72,7 +72,7 @@ export function WordCard({
       if (evalError) throw evalError;
 
       const result = data?.result || 'correct';
-      const aiFeedback = data?.feedback || "Great effort! You're doing wonderfully!";
+      const aiFeedback = data?.feedback_text || data?.feedback?.praise || "Great effort! You're doing wonderfully!";
       
       setEvaluationResult(result as EvaluationResult);
       setFeedback(aiFeedback);
