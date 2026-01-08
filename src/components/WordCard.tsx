@@ -36,7 +36,7 @@ export function WordCard({
   const [isEvaluating, setIsEvaluating] = useState(false);
   const { toast } = useToast();
 
-  const MIN_ANSWER_LENGTH = 5;
+  const MIN_ANSWER_LENGTH = 1;
 
   // Reset form when word or attempt changes
   useEffect(() => {
@@ -53,7 +53,7 @@ export function WordCard({
     
     // Validate answer length
     if (trimmedAnswer.length < MIN_ANSWER_LENGTH) {
-      setError(`Please write at least ${MIN_ANSWER_LENGTH} characters`);
+      setError('Please type an answer');
       return;
     }
     
@@ -209,11 +209,6 @@ export function WordCard({
               />
               {error && (
                 <p className="text-sm text-destructive">{error}</p>
-              )}
-              {!error && userAnswer.trim().length > 0 && !isValidAnswer && (
-                <p className="text-sm text-muted-foreground">
-                  Write at least {MIN_ANSWER_LENGTH} characters
-                </p>
               )}
             </div>
             <div className="flex gap-2">
