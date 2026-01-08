@@ -81,8 +81,8 @@ SCORING RUBRIC (0–5 total):
 
 STRICTNESS RULES - Do NOT be overly generous:
 - If the response is unrelated, too vague, or incorrect, give core_meaning=0.
-- Only set is_correct_enough=true if total_score >= 3 AND core_meaning >= 1.
-- If core_meaning=0 OR off_topic=true, you MUST provide a helpful hint.
+- Only set is_correct_enough=true if total_score >= 3 AND core_meaning == 2 (80% accuracy threshold on meaning).
+- If core_meaning < 2 OR off_topic=true, you MUST provide a helpful hint.
 
 HINT RULES:
 - Short (1–2 sentences), kid-friendly, actionable.
@@ -169,7 +169,7 @@ Evaluate using the scoring rubric. Return ONLY the JSON object.`
       evaluation.word = evaluation.word || trimmedWord;
       evaluation.scores = evaluation.scores || { core_meaning: 0, usage: 0, precision: 0 };
       evaluation.total_score = evaluation.total_score ?? (evaluation.scores.core_meaning + evaluation.scores.usage + evaluation.scores.precision);
-      evaluation.is_correct_enough = evaluation.is_correct_enough ?? (evaluation.total_score >= 3 && evaluation.scores.core_meaning >= 1);
+      evaluation.is_correct_enough = evaluation.is_correct_enough ?? (evaluation.total_score >= 3 && evaluation.scores.core_meaning >= 2);
       evaluation.confidence = evaluation.confidence ?? 0.5;
       evaluation.feedback = evaluation.feedback || { praise: "", correction: "", hint: "", example: "" };
       evaluation.tags = evaluation.tags || { blank: false, off_topic: false, unsafe: false, possible_prompt_injection: false };
