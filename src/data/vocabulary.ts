@@ -7113,7 +7113,7 @@ export const vocabularyWords: VocabularyWord[] = [
     difficulty: 'medium',
     gradeLevel: 'elementary',
     meaning: 'Spreading from person to person',
-    adjectiveExample: 'The team's enthusiasm was contagious.',
+    adjectiveExample: "The team's enthusiasm was contagious.",
     nounExample: 'Joy spread like a contagion through the stands.',
   },
   // Week 20
@@ -7339,7 +7339,7 @@ export const vocabularyWords: VocabularyWord[] = [
     word: 'Quote',
     difficulty: 'easy',
     gradeLevel: 'elementary',
-    meaning: 'To repeat someone else's words',
+    meaning: "To repeat someone else's words",
     verbExample: 'Fans often quote the legendary coach.',
     nounExample: 'The famous quote inspired the team.',
   },
