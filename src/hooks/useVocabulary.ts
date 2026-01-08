@@ -17,7 +17,7 @@ const DIFFICULTY_PROGRESSION: { [key: string]: string } = {
   'very-hard': 'very-hard',
 };
 
-const PROGRESSION_THRESHOLD = 0.80;
+const PROGRESSION_THRESHOLD = 0.25;
 const MIN_WORDS_FOR_PROGRESSION = 15;
 
 export function useVocabulary() {

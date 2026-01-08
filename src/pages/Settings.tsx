@@ -76,7 +76,7 @@ export default function Settings() {
                 <div className="space-y-0.5">
                   <Label htmlFor="auto-progression">Automatic Difficulty Progression</Label>
                   <div className="text-sm text-muted-foreground">
-                    Auto-advance to harder levels when you're ready (80% accuracy on 15+ words)
+                    Auto-advance to harder levels when you're ready (25% accuracy on 15+ words)
                   </div>
                 </div>
                 <Switch
