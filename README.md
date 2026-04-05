@@ -8,7 +8,7 @@ This is a word vocabulary app designed for elementary and middle school kids to 
 ## Prompt used
 
 
-**Which AI models are used for evaluation?**
+## Which AI models are used for evaluation?##
 Options explored were:
 google/gemini-2.5-pro - Most powerful, best for complex reasoning
 google/gemini-2.5-flash (current) - Balanced speed/quality
