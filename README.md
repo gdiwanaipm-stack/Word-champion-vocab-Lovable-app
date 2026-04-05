@@ -57,11 +57,11 @@ I used OpenAI/GPT-5-nano and tested the evaluation with the new model and change
 ## What technologies are used for this project?
 
 This project is built with:
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+- Vite: for lighter UI MVP for faster development, speed and smaller production bundles
+- TypeScript: for error detection and light debbugging
+- React: for lighter development workload and reusable components
+- shadcn-ui: for lighter UI later and relies on Tailwind CSS
+- Tailwind CSS: is AI friendly and allows to build UI directly in the markup
 
 ## Observations and Lessons learned
 
