@@ -3,7 +3,7 @@ This is a word vocabulary app designed for elementary and middle school kids to 
 
 ## Project
 
-**URL**: word-champion-kicks.lovable.app
+**URL**: https://word-champion-kicks.lovable.app/
 
 ## Prompt used
 Problem Statement - make elementary kids learn new vocab words
