@@ -64,4 +64,13 @@ This project is built with:
 ## User Feedback received
 
 
+A) One kid loved it. He actually sat 20 mins doing it even though I have kept the practiece to 2 new words everyday. He keptpressing "Practice more words". Winner approach for parents
+
+B) Another kid says it is too strict in judging his answer when it is in the ball park and meaning are subject to interpretations
+
+C) One Parent - likes it, gamification, does not like the subjectivity and accuracy
+
+D) One more kid wants higher difficulty level words
+
+
 
