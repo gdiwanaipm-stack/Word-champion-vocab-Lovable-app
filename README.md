@@ -27,11 +27,11 @@ The LLM should evaluate, not just generate.
 - Allow kids to review the words they learned any time
 
 Core Features
-- User login and authentication (removed later due to lessons learned)
+- User login and authentication (removed later as shared to lessons learned)
 - Clean minimalist design
 - Mobile friendly look and a dark mode
-- Add soccer theme images with links (since my kid loves it - Hyper personalization)
-- Charts showing progress to goal
+- Add soccer theme images with links to show Hyper personalization (since my kid loves soccer) 
+- Charts showing progress to Goal
 - Feedback uses growth-mindset language, and blank OR "I don't know" answers get a helpful hint instead of generic feedback.Feedback.correction must be gentle; if correct, say what was good and add one small improvement. Be gentle and motivate the kids to learn new vocab words
 
 
