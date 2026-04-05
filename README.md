@@ -63,8 +63,41 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## Lessons learned
+## Observations and Lessons learned
 
+a) Login authentication issues and Supabase issues which is serverless data base. Code is not available on the side to see what was done. Supabase is an external database plug in compared to Replit
+
+b) Vocab correctness is difficult even with lower accuracy thresholds since the meanings are subjective. I put in a guardrail of 20% accuracy for elementary kids
+
+c) Each animation made me use tokens which was expensive :) so created a barebones MVP
+
+d) When One prompt fixed something, another thing breaks or changes you need an early engineer to work on it - reasoning needs to get better on why a word was shown as wrong or correct
+
+e) Break the prompt up into smaller chunks or components for them to work well together instead of a huge prompt
+
+f) Selector tool helps you select different elements on the page and adjust the UI components seamlessly unlike Bolt, Replit
+
+g) Added content safety: inappropriate student content is flagged with neutral redirect, no personal data or profanity in outputs, all feedback stays school-appropriate
+
+h) Repository of new words (attachment that were categorized as easy, medium, hard and very hard) was added to **golden set for evals**
+
+i) Ask the Lovable what AI model is best suited here for the fuzzy logic of vocab
+
+## Guardrails that I included
+
+1) Daily word limit — Max 20 words/day, tracked in localStorage and reset daily. When reached, practice is blocked with a friendly message.
+
+2) Break reminders — A dialog pops up every 10 words suggesting the student take a break, with a dismiss option.
+
+3) AI content safety filters — Edge functions flag profanity, violence, hate speech, and prompt injection attempts. Unsafe inputs return a neutral refocusing response instead of evaluation.
+
+4) Input validation — Server-side length limits on all AI inputs (word: 100 chars, meaning: 500, answer: 500) to prevent abuse.
+
+5) Graceful AI failures — If the AI gateway errors out, fallback responses ensure the student never sees a crash (defaults to encouraging feedback).
+
+6) Rate limit handling — 429/402 responses from the AI gateway are caught and surfaced as friendly messages.
+
+All of this lives in src/hooks/useUsageLimits.ts (client-side limits) and the three edge functions (server-side safety).
 
 ## User Feedback received
 
