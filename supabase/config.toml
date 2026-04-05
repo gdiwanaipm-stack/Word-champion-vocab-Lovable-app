@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.generate-hint]
 verify_jwt = false
+
+[functions.session-summary]
+verify_jwt = false
