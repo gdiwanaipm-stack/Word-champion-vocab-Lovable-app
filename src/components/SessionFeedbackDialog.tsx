@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -12,16 +12,50 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Loader2, Sparkles } from "lucide-react";
+
+interface PracticedWord {
+  word: string;
+  correct: boolean;
+}
+
+interface SessionData {
+  score: number;
+  totalAttempts: number;
+  words: PracticedWord[];
+  difficulty: string;
+  gradeLevel: string;
+}
 
 interface SessionFeedbackDialogProps {
   open: boolean;
   onClose: () => void;
+  sessionData?: SessionData;
 }
 
-export function SessionFeedbackDialog({ open, onClose }: SessionFeedbackDialogProps) {
+export function SessionFeedbackDialog({ open, onClose, sessionData }: SessionFeedbackDialogProps) {
   const [likes, setLikes] = useState("");
   const [improvements, setImprovements] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [aiSummary, setAiSummary] = useState<string | null>(null);
+  const [isLoadingSummary, setIsLoadingSummary] = useState(false);
+
+  // Fetch AI summary when dialog opens with session data
+  useEffect(() => {
+    if (!open || !sessionData) return;
+    setAiSummary(null);
+    setIsLoadingSummary(true);
+
+    supabase.functions
+      .invoke("session-summary", { body: sessionData })
+      .then(({ data, error }) => {
+        if (!error && data?.summary) {
+          setAiSummary(data.summary);
+        }
+      })
+      .catch((err) => console.error("Error fetching session summary:", err))
+      .finally(() => setIsLoadingSummary(false));
+  }, [open, sessionData]);
 
   const handleSubmit = async () => {
     if (!likes.trim() && !improvements.trim()) {
@@ -37,7 +71,7 @@ export function SessionFeedbackDialog({ open, onClose }: SessionFeedbackDialogPr
       });
 
       if (error) throw error;
-      
+
       toast.success("Thanks for your feedback!");
       setLikes("");
       setImprovements("");
@@ -65,8 +99,26 @@ export function SessionFeedbackDialog({ open, onClose }: SessionFeedbackDialogPr
             Your feedback helps us improve! This is optional.
           </DialogDescription>
         </DialogHeader>
-        
-        <div className="space-y-4 py-4">
+
+        {/* AI Session Summary */}
+        {sessionData && (
+          <div className="rounded-lg bg-primary/5 border border-primary/15 p-4 space-y-2">
+            <div className="flex items-center gap-1.5 text-sm font-medium text-primary">
+              <Sparkles className="w-4 h-4" />
+              <span>Your Coach Says</span>
+            </div>
+            {isLoadingSummary ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Getting your summary...</span>
+              </div>
+            ) : aiSummary ? (
+              <p className="text-sm text-foreground leading-relaxed">{aiSummary}</p>
+            ) : null}
+          </div>
+        )}
+
+        <div className="space-y-4 py-2">
           <div className="space-y-2">
             <Label htmlFor="likes">What did you like? 😊</Label>
             <Textarea
@@ -77,7 +129,7 @@ export function SessionFeedbackDialog({ open, onClose }: SessionFeedbackDialogPr
               className="min-h-[80px]"
             />
           </div>
-          
+
           <div className="space-y-2">
             <Label htmlFor="improvements">What could be improved? 💡</Label>
             <Textarea

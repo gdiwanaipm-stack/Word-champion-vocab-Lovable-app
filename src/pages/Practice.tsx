@@ -28,7 +28,7 @@ function incrementSessionCount(): number {
 
 export default function Practice() {
   const navigate = useNavigate();
-  const { getTodaysWords, updateProgress, checkAndProgressDifficulty, toggleDifficultWord, isWordDifficult, loading } = useVocabulary();
+  const { getTodaysWords, updateProgress, checkAndProgressDifficulty, toggleDifficultWord, isWordDifficult, loading, settings } = useVocabulary();
   const { 
     wordsPracticedToday,
     isDailyLimitReached, 
@@ -50,6 +50,7 @@ export default function Practice() {
   const [showProgressionDialog, setShowProgressionDialog] = useState(false);
   const [showFeedbackDialog, setShowFeedbackDialog] = useState(false);
   const [newDifficulty, setNewDifficulty] = useState<string>('');
+  const [completedScore, setCompletedScore] = useState(0);
   
   const ATTEMPTS_PER_WORD = 2;
   const totalAttempts = words.length * ATTEMPTS_PER_WORD;
@@ -73,6 +74,7 @@ export default function Practice() {
       // Session complete - add current words to practiced list
       setPracticedWordIds(prev => [...prev, ...words.map(w => w.id)]);
       setCompleted(true);
+      setCompletedScore(isCorrect ? score + 1 : score);
       const progressedDifficulty = await checkAndProgressDifficulty();
       if (progressedDifficulty) {
         setNewDifficulty(progressedDifficulty);
@@ -171,9 +173,16 @@ export default function Practice() {
           onClose={() => setShowProgressionDialog(false)}
           newDifficulty={newDifficulty}
         />
-        <SessionFeedbackDialog 
+        <SessionFeedbackDialog
           open={showFeedbackDialog && !showProgressionDialog}
           onClose={() => setShowFeedbackDialog(false)}
+          sessionData={{
+            score: completedScore,
+            totalAttempts,
+            words: words.map((w, i) => ({ word: w.word, correct: i < completedScore })),
+            difficulty: settings.difficulty,
+            gradeLevel: settings.gradeLevel,
+          }}
         />
         <main className="container mx-auto px-4 py-8">
           <Card className="max-w-2xl mx-auto text-center">
