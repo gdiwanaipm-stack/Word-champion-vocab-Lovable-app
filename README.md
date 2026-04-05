@@ -1,4 +1,4 @@
-# Welcome to your Lovable project
+# Word Vocabulary app with Lovable
 This is a word vocabulary app designed for elementary and middle school kids to help them build proficiency in learning new words and their meaning. It is created in soccer setup to help them meet their "GOAL". The app is designed to encourage learning and motivate them.
 
 
@@ -66,10 +66,3 @@ This project is built with:
 
 Simply open [Lovable](https://lovable.dev/projects/49e9dd3a-ede4-4f38-bd84-f7c312de1f06) and click on Share -> Publish.
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
