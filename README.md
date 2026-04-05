@@ -65,7 +65,7 @@ This project is built with:
 
 ## Observations and Lessons learned
 
-a) Login authentication issues and Supabase issues which is serverless data base. Code is not available on the side to see what was done. Supabase is an external database plug in compared to Replit
+a) Login authentication issues and Supabase issues which is serverless data base. Code is not available on the side to see what was done. Supabase is an external database plug in compared to Replit ** Update Supabase auth has improved with Lovable Cloud in 2 months of building this app.
 
 b) Vocab correctness is difficult even with lower accuracy thresholds since the meanings are subjective. I put in a guardrail of 20% accuracy for elementary kids
 
