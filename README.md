@@ -6,6 +6,33 @@ This is a word vocabulary app designed for elementary and middle school kids to 
 **URL**: word-champion-kicks.lovable.app
 
 ## Prompt used
+Problem Statement - make elementary kids learn new vocab words
+
+Users: Elementary kids with difficulty levels: easy, medium, difficult
+
+Prompt - Build a vocabulary web app for elementary, middle school kids ( drop down selection to pick grade level) to help them learn new English words and track their progress towards their weekly goal 
+Define what good looks like? 
+Vocabulary understanding is fuzzy, not binary
+Students may give partial, contextual, or paraphrased meanings
+Progress tracking requires semantic similarity, not exact matches
+The LLM should evaluate, not just generate.
+
+
+- Difficulty level ( Easy, Medium, Hard, Very Hard)
+- Generate 2 words per day. Ask the student for the meaning first and then say whether it is right or wrong. Then give them their true meaning along with an example of the usage of the word as a noun, verb, adjective
+- Repeat those words every day for 2 weeks
+  Give a count of how many vocubulary words they did each week
+- Track the progress on weekly basis
+- Reward them with a silver cup each week if they do it for 5 out of 7 days in a week and gold cup if they do it all 7 days in a week
+- Allow kids to review the words they learned any time
+
+Core Features
+- User login and authentication (removed later due to lessons learned)
+- Clean minimalist design
+- Mobile friendly look and a dark mode
+- Add soccer theme images with links (since my kid loves it - Hyper personalization)
+- Charts showing progress to goal
+- Feedback uses growth-mindset language, and blank OR "I don't know" answers get a helpful hint instead of generic feedback.Feedback.correction must be gentle; if correct, say what was good and add one small improvement. Be gentle and motivate the kids to learn new vocab words
 
 
 ## Which AI models are used for evaluation?##
@@ -32,4 +59,9 @@ This project is built with:
 - Tailwind CSS
 
 ## Lessons learned
+
+
+## User Feedback received
+
+
 
