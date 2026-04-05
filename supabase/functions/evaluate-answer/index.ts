@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import Anthropic from "npm:@anthropic-ai/sdk";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -48,16 +47,10 @@ serve(async (req) => {
       );
     }
 
-    const apiKey = Deno.env.get("ANTHROPIC_API_KEY");
-    if (!apiKey) throw new Error("ANTHROPIC_API_KEY is not configured");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
-    const client = new Anthropic({ apiKey });
-
-    const response = await client.messages.create({
-      model: "claude-opus-4-6",
-      max_tokens: 512,
-      thinking: { type: "adaptive" },
-      system: `You are a warm, encouraging vocabulary tutor for 2nd-5th grade students. Evaluate student understanding using this rubric.
+    const systemPrompt = `You are a warm, encouraging vocabulary tutor for 2nd-5th grade students. Evaluate student understanding using this rubric.
 
 SCORING RUBRIC (0-5 total):
 - core_meaning (0-2): Does the response capture the essential meaning? (2=correct gist, 1=partially correct, 0=wrong/off-track)
@@ -94,27 +87,56 @@ FIELD RULES:
 - If total_score==5 and confidence>=0.75: next_step="mastered"
 - feedback.example must be a simple correct sentence using the word
 - Keep praise and correction warm, growth-mindset, 1-2 sentences
-- Never say "wrong" to the student`,
-      messages: [
-        {
-          role: "user",
-          content: `WORD: "${trimmedWord}"
+- Never say "wrong" to the student`;
+
+    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        model: "google/gemini-2.5-flash",
+        messages: [
+          { role: "system", content: systemPrompt },
+          {
+            role: "user",
+            content: `WORD: "${trimmedWord}"
 CORRECT MEANING: "${trimmedMeaning}"
 STUDENT'S ANSWER: "${trimmedAnswer}"
 
 Evaluate using the scoring rubric. Return ONLY the JSON object.`,
-        },
-      ],
+          },
+        ],
+      }),
     });
 
-    const textBlock = response.content.find((b) => b.type === "text");
-    if (!textBlock || textBlock.type !== "text") {
+    if (!response.ok) {
+      if (response.status === 429) {
+        return new Response(JSON.stringify({ error: "Rate limited, please try again later." }), {
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      if (response.status === 402) {
+        return new Response(JSON.stringify({ error: "AI credits exhausted." }), {
+          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      const t = await response.text();
+      console.error("AI gateway error:", response.status, t);
+      throw new Error("AI gateway error");
+    }
+
+    const data = await response.json();
+    const textContent = data.choices?.[0]?.message?.content?.trim();
+
+    if (!textContent) {
       throw new Error("No text content in response");
     }
 
     let evaluation;
     try {
-      const cleaned = textBlock.text.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      const cleaned = textContent.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
       evaluation = JSON.parse(cleaned);
 
       evaluation.word = evaluation.word || trimmedWord;
@@ -150,7 +172,7 @@ Evaluate using the scoring rubric. Return ONLY the JSON object.`,
         evaluation.feedback.hint ||
         "Keep trying!";
     } catch {
-      console.error("Failed to parse evaluation response:", textBlock.text);
+      console.error("Failed to parse evaluation response:", textContent);
       evaluation = {
         word: trimmedWord,
         scores: { core_meaning: 1, usage: 1, precision: 1 },
