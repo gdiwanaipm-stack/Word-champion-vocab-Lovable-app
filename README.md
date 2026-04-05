@@ -35,7 +35,7 @@ Core Features
 - Feedback uses growth-mindset language, and blank OR "I don't know" answers get a helpful hint instead of generic feedback.Feedback.correction must be gentle; if correct, say what was good and add one small improvement. Be gentle and motivate the kids to learn new vocab words
 
 
-## Which AI models are used for evaluation?##
+## Which AI models are used for evaluation?
 Options explored were:
 google/gemini-2.5-pro - Most powerful, best for complex reasoning
 google/gemini-2.5-flash (current) - Balanced speed/quality
