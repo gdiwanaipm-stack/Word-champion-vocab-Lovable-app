@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -37,6 +37,26 @@ export function WordCard({
   const { toast } = useToast();
 
   const MIN_ANSWER_LENGTH = 1;
+
+  const MOTIVATIONAL_MESSAGES = [
+    "🧠 Thinking hard...",
+    "📚 Checking your answer...",
+    "⭐ Almost there...",
+    "🔍 Analyzing your response...",
+    "💪 You're doing great!",
+    "🌟 Let's see how you did...",
+  ];
+
+  const [motivationalIndex, setMotivationalIndex] = useState(0);
+
+  useEffect(() => {
+    if (!isEvaluating) return;
+    setMotivationalIndex(0);
+    const interval = setInterval(() => {
+      setMotivationalIndex(prev => (prev + 1) % MOTIVATIONAL_MESSAGES.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [isEvaluating]);
 
   // Reset form when word or attempt changes
   useEffect(() => {
@@ -238,6 +258,22 @@ export function WordCard({
                 )}
               </Button>
             </div>
+            {isEvaluating && (
+              <div className="flex flex-col items-center gap-3 p-6 rounded-lg bg-primary/5 border border-primary/10 animate-fade-in">
+                <div className="flex gap-1">
+                  {[0, 1, 2].map(i => (
+                    <span
+                      key={i}
+                      className="w-3 h-3 rounded-full bg-primary animate-bounce"
+                      style={{ animationDelay: `${i * 0.15}s` }}
+                    />
+                  ))}
+                </div>
+                <p className="text-sm font-medium text-primary transition-all duration-300">
+                  {MOTIVATIONAL_MESSAGES[motivationalIndex]}
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="space-y-6">
