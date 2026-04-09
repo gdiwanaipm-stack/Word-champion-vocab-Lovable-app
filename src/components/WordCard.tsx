@@ -38,6 +38,26 @@ export function WordCard({
 
   const MIN_ANSWER_LENGTH = 1;
 
+  const MOTIVATIONAL_MESSAGES = [
+    "🧠 Thinking hard...",
+    "📚 Checking your answer...",
+    "⭐ Almost there...",
+    "🔍 Analyzing your response...",
+    "💪 You're doing great!",
+    "🌟 Let's see how you did...",
+  ];
+
+  const [motivationalIndex, setMotivationalIndex] = useState(0);
+
+  useEffect(() => {
+    if (!isEvaluating) return;
+    setMotivationalIndex(0);
+    const interval = setInterval(() => {
+      setMotivationalIndex(prev => (prev + 1) % MOTIVATIONAL_MESSAGES.length);
+    }, 2000);
+    return () => clearInterval(interval);
+  }, [isEvaluating]);
+
   // Reset form when word or attempt changes
   useEffect(() => {
     setUserAnswer('');
