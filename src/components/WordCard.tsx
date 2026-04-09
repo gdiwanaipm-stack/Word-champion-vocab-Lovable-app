@@ -258,6 +258,22 @@ export function WordCard({
                 )}
               </Button>
             </div>
+            {isEvaluating && (
+              <div className="flex flex-col items-center gap-3 p-6 rounded-lg bg-primary/5 border border-primary/10 animate-fade-in">
+                <div className="flex gap-1">
+                  {[0, 1, 2].map(i => (
+                    <span
+                      key={i}
+                      className="w-3 h-3 rounded-full bg-primary animate-bounce"
+                      style={{ animationDelay: `${i * 0.15}s` }}
+                    />
+                  ))}
+                </div>
+                <p className="text-sm font-medium text-primary transition-all duration-300">
+                  {MOTIVATIONAL_MESSAGES[motivationalIndex]}
+                </p>
+              </div>
+            )}
           </div>
         ) : (
           <div className="space-y-6">
