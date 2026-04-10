@@ -54,6 +54,12 @@ openai/gpt-5-nano - Fastest/cheapest OpenAI option
 
 I used OpenAI/GPT-5-nano and tested the evaluation with the new model and changed it back to **Gemini 2.5 Flash** since the response rate with nano was more than 5 secs with new evaluation criteria. The app uses Google Gemini 2.5 Flash to evaluate student answers. It's configured in the evaluate-answer edge function and accepts synonyms, paraphrases, and example-based meanings - prioritizing understanding over verbatim definitions.
 
+**Model Update**
+Since Lovable AI does not support Claude models yet, I switched to **two-phase models** for better accuracy and performance
+A) The evaluate-answer function was changed to Openai/GPT-5 for maximum accuracy. GPT 5 is a powerfull all-rounder and accurate for evaluation and motivating the students but a bit slower.
+B) Keep hints/summaries on Gemini 2.5 Flash for speed. 
+//this 2 phased model approach gave better results and improved feedback from the students
+
 ## What technologies are used for this project?
 
 This project is built with:
@@ -81,7 +87,7 @@ g) Added content safety: inappropriate student content is flagged with neutral r
 
 h) Repository of new words (attachment that were categorized as easy, medium, hard and very hard) was added to **golden set for evals**
 
-i) Ask the Lovable what AI model is best suited here for the fuzzy logic of vocab
+i) Ask the Lovable what AI model is best suited here for the fuzzy logic of vocab. Two-phased models give better accuracy. TRADEOFF: SPEED Vs. ACCURACY
 
 ## Guardrails that I included
 
