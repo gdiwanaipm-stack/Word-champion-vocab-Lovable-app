@@ -60,6 +60,8 @@ A) The evaluate-answer function was changed to Openai/GPT-5 for maximum accuracy
 B) Keep hints/summaries on Gemini 2.5 Flash for speed. 
 //this 2 phased model approach gave better results and improved feedback from the students
 
+**NOTE:** I could have further chosen specific model based on how many tokens get used for each outcome but Lovable gives monthly credits at project level and does not make that capability for now
+
 ## What technologies are used for this project?
 
 This project is built with:
