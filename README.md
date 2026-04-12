@@ -107,6 +107,24 @@ i) Ask the Lovable what AI model is best suited here for the fuzzy logic of voca
 
 All of this lives in src/hooks/useUsageLimits.ts (client-side limits) and the three edge functions (server-side safety).
 
+```
+**How is lovable using context windows for this vocabulary app that has been created?**
+1. Edge Function Calls (Your App's AI) Each time a student submits an answer, the evaluate-answer function sends a single-turn request to GPT-5 with:
+
+A system prompt (~400 tokens) containing the scoring rubric
+A user message with the word, meaning, and student answer (~50-100 tokens)
+Similarly, generate-hint and session-summary each make one-shot calls to Gemini 2.5 Flash. These are stateless — no conversation history is carried between calls, so context window usage is minimal (~500-1000 tokens per request).
+
+2. Lovable Editor (Building Your App) When I help you build and modify this app, I work within a context window that includes:
+
+Your current codebase (file contents, project structure)
+Our conversation history (recent messages)
+Tool outputs (console logs, file reads, etc.)
+This is why I sometimes need to re-read files if they've changed, and why breaking requests into smaller steps works better — it keeps the relevant context focused.
+
+Key difference: Your app's AI uses tiny, focused context windows per request (efficient and cheap). The Lovable editor uses a much larger context window to reason about your entire codebase.
+```
+
 ## User Feedback received
 
 
