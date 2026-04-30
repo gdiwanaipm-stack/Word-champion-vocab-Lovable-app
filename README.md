@@ -126,7 +126,7 @@ Key difference: Your app's AI uses tiny, focused context windows per request (ef
 ```
 
 ## User Feedback received
-
+(I have been storing the feedback in a local database to review the feedback and asking my AI model to improve based on the feedback)
 
 A) One kid loved it. He actually sat 20 mins doing it even though I have kept the practiece to 2 new words everyday. He keptpressing "Practice more words". Winner approach for parents
 
