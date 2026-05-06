@@ -11,6 +11,7 @@ Problem Statement - make elementary kids learn new vocab words
 Users: Elementary kids with difficulty levels: easy, medium, difficult
 
 Prompt - Build a vocabulary web app for elementary, middle school kids ( drop down selection to pick grade level) to help them learn new English words and track their progress towards their weekly goal 
+
 Define what good looks like? 
 Vocabulary understanding is fuzzy, not binary
 Students may give partial, contextual, or paraphrased meanings
